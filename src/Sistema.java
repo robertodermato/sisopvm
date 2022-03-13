@@ -193,16 +193,22 @@ public class Sistema {
             System.out.print(w.r2);  System.out.print(", ");
             System.out.print(w.p);  System.out.println("  ] ");
         }
+
         public void dump(Word[] m, int ini, int fim) {
             for (int i = ini; i < fim; i++) {
                 System.out.print(i); System.out.print(":  ");  dump(m[i]);
             }
         }
+
         public void carga(Word[] p, Word[] m) {    // significa ler "p" de memoria secundaria e colocar na principal "m"
             for (int i = 0; i < p.length; i++) {
-                m[i].opc = p[i].opc;     m[i].r1 = p[i].r1;     m[i].r2 = p[i].r2;     m[i].p = p[i].p;
+                m[i].opc = p[i].opc;
+                m[i].r1 = p[i].r1;
+                m[i].r2 = p[i].r2;
+                m[i].p = p[i].p;
             }
         }
+
         public void executa() {
             vm.cpu.setContext(0);          // monitor seta contexto - pc aponta para inicio do programa
             vm.cpu.run();                  //                         e cpu executa
@@ -265,36 +271,36 @@ public class Sistema {
                 new Word(Opcode.STOP, -1, -1, -1) };
 
         public Word[] fibonacci10 = new Word[] { // mesmo que prog exemplo, so que usa r0 no lugar de r8
-                new Word(Opcode.LDI, 1, -1, 0),
-                new Word(Opcode.STD, 1, -1, 20),    // 20 posicao de memoria onde inicia a serie de fibonacci gerada
-                new Word(Opcode.LDI, 2, -1, 1),
-                new Word(Opcode.STD, 2, -1, 21),
-                new Word(Opcode.LDI, 0, -1, 22),
-                new Word(Opcode.LDI, 6, -1, 6),
-                new Word(Opcode.LDI, 7, -1, 30),
-                new Word(Opcode.LDI, 3, -1, 0),
-                new Word(Opcode.ADD, 3, 1, -1),
-                new Word(Opcode.LDI, 1, -1, 0),
-                new Word(Opcode.ADD, 1, 2, -1),
-                new Word(Opcode.ADD, 2, 3, -1),
-                new Word(Opcode.STX, 0, 2, -1),
-                new Word(Opcode.ADDI, 0, -1, 1),
-                new Word(Opcode.SUB, 7, 0, -1),
-                new Word(Opcode.JMPIG, 6, 7, -1),
+                new Word(Opcode.LDI, 1, -1, 0),  //0
+                new Word(Opcode.STD, 1, -1, 20),    // 20 posicao de memoria onde inicia a serie de fibonacci gerada //1
+                new Word(Opcode.LDI, 2, -1, 1), //2
+                new Word(Opcode.STD, 2, -1, 21), //3
+                new Word(Opcode.LDI, 0, -1, 22), //4
+                new Word(Opcode.LDI, 6, -1, 6), //5
+                new Word(Opcode.LDI, 7, -1, 30), //6
+                new Word(Opcode.LDI, 3, -1, 0), //7
+                new Word(Opcode.ADD, 3, 1, -1), //8
+                new Word(Opcode.LDI, 1, -1, 0), //9
+                new Word(Opcode.ADD, 1, 2, -1), //10
+                new Word(Opcode.ADD, 2, 3, -1), //11
+                new Word(Opcode.STX, 0, 2, -1), //12
+                new Word(Opcode.ADDI, 0, -1, 1), //13
+                new Word(Opcode.SUB, 7, 0, -1), //14
+                new Word(Opcode.JMPIG, 6, 7, -1), //15
                 new Word(Opcode.STOP, -1, -1, -1),   // POS 16
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1), //17
+                new Word(Opcode.DATA, -1, -1, -1), //18
+                new Word(Opcode.DATA, -1, -1, -1), //19
                 new Word(Opcode.DATA, -1, -1, -1),   // POS 20
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1)  // ate aqui - serie de fibonacci ficara armazenada
+                new Word(Opcode.DATA, -1, -1, -1), //21
+                new Word(Opcode.DATA, -1, -1, -1), //22
+                new Word(Opcode.DATA, -1, -1, -1), //23
+                new Word(Opcode.DATA, -1, -1, -1), //24
+                new Word(Opcode.DATA, -1, -1, -1), //25
+                new Word(Opcode.DATA, -1, -1, -1), //26
+                new Word(Opcode.DATA, -1, -1, -1), //27
+                new Word(Opcode.DATA, -1, -1, -1), //28
+                new Word(Opcode.DATA, -1, -1, -1)  // ate aqui - serie de fibonacci ficara armazenada //29
         };
 
         public Word[] fatorial = new Word[] { 	 // este fatorial so aceita valores positivos.   nao pode ser zero
