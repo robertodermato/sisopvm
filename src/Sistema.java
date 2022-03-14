@@ -271,22 +271,22 @@ public class Sistema {
                 new Word(Opcode.STOP, -1, -1, -1) };
 
         public Word[] fibonacci10 = new Word[] { // mesmo que prog exemplo, so que usa r0 no lugar de r8
-                new Word(Opcode.LDI, 1, -1, 0),  //0
-                new Word(Opcode.STD, 1, -1, 20),    // 20 posicao de memoria onde inicia a serie de fibonacci gerada //1
-                new Word(Opcode.LDI, 2, -1, 1), //2
-                new Word(Opcode.STD, 2, -1, 21), //3
-                new Word(Opcode.LDI, 0, -1, 22), //4
-                new Word(Opcode.LDI, 6, -1, 6), //5
-                new Word(Opcode.LDI, 7, -1, 30), //6
-                new Word(Opcode.LDI, 3, -1, 0), //7
+                new Word(Opcode.LDI, 1, -1, 0),  //0 coloca 0 no reg 1
+                new Word(Opcode.STD, 1, -1, 20),    // 20 posicao de memoria onde inicia a serie de fibonacci gerada //1, ou seja coloca valor de reg 1 (0) na posicao 20
+                new Word(Opcode.LDI, 2, -1, 1), //2 coloca 1 no reg 2
+                new Word(Opcode.STD, 2, -1, 21), //3 na posição 21 coloca o que está em no reg 2, ou seja coloca 1 na posicao 21
+                new Word(Opcode.LDI, 0, -1, 22), //4 coloca 22 no reg 0
+                new Word(Opcode.LDI, 6, -1, 6), //5 coloca 6 no reg 6 ???? - linha sem sentido
+                new Word(Opcode.LDI, 7, -1, 31), //6 coloca 30 no reg 7. É o contador. será a posição one começam os dados, ou seja 20 + a quantidade de números fibonacci que queremos
+                new Word(Opcode.LDI, 3, -1, 0), //7 coloca 0 no reg 3
                 new Word(Opcode.ADD, 3, 1, -1), //8
                 new Word(Opcode.LDI, 1, -1, 0), //9
-                new Word(Opcode.ADD, 1, 2, -1), //10
-                new Word(Opcode.ADD, 2, 3, -1), //11
-                new Word(Opcode.STX, 0, 2, -1), //12
-                new Word(Opcode.ADDI, 0, -1, 1), //13
-                new Word(Opcode.SUB, 7, 0, -1), //14
-                new Word(Opcode.JMPIG, 6, 7, -1), //15
+                new Word(Opcode.ADD, 1, 2, -1), //10 add reg 1 + reg 2
+                new Word(Opcode.ADD, 2, 3, -1), //11 add reg 2 + reg 3
+                new Word(Opcode.STX, 0, 2, -1), //12 coloca o que está em reg 2 (1) na posição  memória do reg 0 (22), ou seja coloca 1 na pos 22
+                new Word(Opcode.ADDI, 0, -1, 1), //13 add 1 no reg 0, ou seja reg fica com 23. Isso serve para mudar a posição da memória onde virá o próximo numero fbonacci
+                new Word(Opcode.SUB, 7, 0, -1), //14 reg 7 = reg 7 - o que esta no reg 0, ou seja 30 menos 23 e coloca em r7. Isso é o contador regressivo que fica em r7. se for 0, pára
+                new Word(Opcode.JMPIG, 6, 7, -1), //15 se r7 maior que 0 então pc recebe 6, else pc = pc + 1
                 new Word(Opcode.STOP, -1, -1, -1),   // POS 16
                 new Word(Opcode.DATA, -1, -1, -1), //17
                 new Word(Opcode.DATA, -1, -1, -1), //18
@@ -300,7 +300,8 @@ public class Sistema {
                 new Word(Opcode.DATA, -1, -1, -1), //26
                 new Word(Opcode.DATA, -1, -1, -1), //27
                 new Word(Opcode.DATA, -1, -1, -1), //28
-                new Word(Opcode.DATA, -1, -1, -1)  // ate aqui - serie de fibonacci ficara armazenada //29
+                new Word(Opcode.DATA, -1, -1, -1),  // ate aqui - serie de fibonacci ficara armazenada //29
+                new Word(Opcode.DATA, -1, -1, -1)
         };
 
         public Word[] fatorial = new Word[] { 	 // este fatorial so aceita valores positivos.   nao pode ser zero
