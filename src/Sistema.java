@@ -126,6 +126,10 @@ public class Sistema {
                         pc = ir.p;
                         break;
 
+                    case JMPI: //  PC ← Rs
+                        pc = ir.r1;
+                        break;
+
                     case JMPIG: // If Rc > 0 Then PC ← Rs Else PC ← PC +1
                         if (reg[ir.r2] > 0) {
                             pc = reg[ir.r1];
@@ -136,6 +140,14 @@ public class Sistema {
 
                     case JMPIE: // If Rc = 0 Then PC ← Rs Else PC ← PC +1
                         if (reg[ir.r2] == 0) {
+                            pc = reg[ir.r1];
+                        } else {
+                            pc++;
+                        }
+                        break;
+
+                    case JMPIL: //  PC ← Rs
+                        if (reg[ir.r2] < 0) {
                             pc = reg[ir.r1];
                         } else {
                             pc++;
