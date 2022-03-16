@@ -293,7 +293,7 @@ public class Sistema {
                 new Word(Opcode.LDI, 2, -1, 1), //2 coloca 1 no reg 2
                 new Word(Opcode.STD, 2, -1, 21), //3 na posição 21 coloca o que está em no reg 2, ou seja coloca 1 na posicao 21
                 new Word(Opcode.LDI, 0, -1, 22), //4 coloca 22 no reg 0
-                new Word(Opcode.LDI, 6, -1, 6), //5 coloca 6 no reg 6 ???? - linha sem sentido
+                new Word(Opcode.LDI, 6, -1, 6), //5 coloca 6 no reg 6 - linha do inicio do loop
                 new Word(Opcode.LDD, 7, -1, 17), //6 coloca 31 no reg 7. É o contador. será a posição one começam os dados, ou seja 20 + a quantidade de números fibonacci que queremos
                 // new Word(Opcode.LDI, 7, -1, 31), //6 coloca 31 no reg 7. É o contador. será a posição one começam os dados, ou seja 20 + a quantidade de números fibonacci que queremos
                 new Word(Opcode.LDI, 3, -1, 0), //7 coloca 0 no reg 3
