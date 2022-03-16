@@ -41,6 +41,7 @@ public class Sistema {
         private int pc; 			// ... composto de program counter,
         private Word ir; 			// instruction register,
         private int[] reg;       	// registradores da CPU
+        // cria variável private int de interrupção ou array
 
         private Word[] m;   // CPU acessa MEMORIA, guarda referencia 'm' a ela. memoria nao muda. ee sempre a mesma.
 
@@ -70,6 +71,7 @@ public class Sistema {
         }
 
         public void run() { 		// execucao da CPU supoe que o contexto da CPU, vide acima, esta devidamente setado
+
             while (true) { 			// ciclo de instrucoes. acaba cfe instrucao, veja cada caso.
                 // FETCH
                 ir = m[pc]; 	// busca posicao da memoria apontada por pc, guarda em ir
@@ -137,6 +139,14 @@ public class Sistema {
                             pc++;
                         }
                         break;
+///fsfsdf
+                    case JMPIGM: // If Rc > 0 Then PC ← [A] Else PC ← PC +1
+                        if (reg[ir.r2] > 0) {
+                            pc = reg[ir.r1];
+                        } else {
+                            pc++;
+                        }
+                        break;
 
                     case JMPIE: // If Rc = 0 Then PC ← Rs Else PC ← PC +1
                         if (reg[ir.r2] == 0) {
@@ -152,6 +162,10 @@ public class Sistema {
                         } else {
                             pc++;
                         }
+                        break;
+
+                    case JMPIM: //  PC ← [A]
+                        pc = m[ir.p].p;
                         break;
 
                     case STOP: // por enquanto, para execucao
