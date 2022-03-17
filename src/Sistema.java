@@ -31,9 +31,9 @@ public class Sistema {
 
     public enum Opcode {
         DATA, ___,		    // se memoria nesta posicao tem um dado, usa DATA, se nao usada ee NULO ___
-        JMP, JMPI, JMPIG, JMPIL, JMPIE,  JMPIM, JMPIGM, JMPILM, JMPIEM, STOP,   // desvios e parada
-        ADDI, SUBI,  ADD, SUB, MULT,         // matematicos
-        LDI, LDD, STD,LDX, STX, SWAP;        // movimentacao
+        JMP, JMPI, JMPIG, JMPIL, JMPIE, JMPIM, JMPIGM, JMPILM, JMPIEM, STOP,   // desvios e parada
+        ADDI, SUBI, ADD, SUB, MULT,           // matemáticos
+        LDI, LDD, STD, LDX, STX, SWAP;        // movimentação
     }
 
     public class CPU {
@@ -119,6 +119,11 @@ public class Sistema {
                         pc++;
                         break;
 
+                    case LDX: // Rd ← [Rs]
+                        reg[ir.r1] = m[reg[ir.r2]].p;
+                        pc++;
+                        break;
+
                     case SUB: // Rd ← Rd - Rs
                         reg[ir.r1] = reg[ir.r1] - reg[ir.r2];
                         pc++;
@@ -187,6 +192,14 @@ public class Sistema {
 
                     case JMPIM: //  PC ← [A]
                         pc = m[ir.p].p;
+                        break;
+
+                    case SWAP: // t <- r1; r1 <- r2; r2 <- t
+                        int temp;
+                        temp = reg[ir.r1];
+                        reg[ir.r1] = reg[ir.r2];
+                        reg [ir.r2] = temp;
+                        pc ++;
                         break;
 
                     case STOP: // por enquanto, para execucao
