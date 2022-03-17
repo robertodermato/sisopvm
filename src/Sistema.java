@@ -124,6 +124,11 @@ public class Sistema {
                         pc++;
                         break;
 
+                    case SUBI: // Rd ← Rd - k
+                        reg[ir.r1] = reg[ir.r1] - ir.p;
+                        pc++;
+                        break;
+
                     case JMP: //  PC ← k
                         pc = ir.p;
                         break;
@@ -142,6 +147,22 @@ public class Sistema {
 
                     case JMPIGM: // If Rc > 0 Then PC ← [A] Else PC ← PC +1
                         if (reg[ir.r2] > 0) {
+                            pc = m[ir.p].p;
+                        } else {
+                            pc++;
+                        }
+                        break;
+
+                    case JMPILM: // If Rc < 0 Then PC ← [A] Else PC ← PC +1
+                        if (reg[ir.r2] < 0) {
+                            pc = m[ir.p].p;
+                        } else {
+                            pc++;
+                        }
+                        break;
+
+                    case JMPIEM: // If Rc = 0 Then PC ← [A] Else PC ← PC +1
+                        if (reg[ir.r2] == 0) {
                             pc = m[ir.p].p;
                         } else {
                             pc++;
