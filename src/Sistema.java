@@ -139,10 +139,10 @@ public class Sistema {
                             pc++;
                         }
                         break;
-///fsfsdf
+
                     case JMPIGM: // If Rc > 0 Then PC ← [A] Else PC ← PC +1
                         if (reg[ir.r2] > 0) {
-                            pc = reg[ir.r1];
+                            pc = m[ir.p].p;
                         } else {
                             pc++;
                         }
@@ -281,9 +281,9 @@ public class Sistema {
     // ------------------- instancia e testa sistema
     public static void main(String args[]) {
         Sistema s = new Sistema();
-        s.roda(progs.fibonacci10);           // "progs" significa acesso/referencia ao programa em memoria secundaria
+        //s.roda(progs.fibonacci10);           // "progs" significa acesso/referencia ao programa em memoria secundaria
         // s.roda(progs.progMinimo);
-        //s.roda(progs.fatorial);
+        s.roda(progs.fatorial);
     }
     // -------------------------------------------------------------------------------------------------------
     // --------------- TUDO ABAIXO DE MAIN É AUXILIAR PARA FUNCIONAMENTO DO SISTEMA - nao faz parte
