@@ -5,6 +5,7 @@
 // Fase 1 - máquina virtual (vide enunciado correspondente)
 //
 
+import java.sql.SQLOutput;
 import java.util.*;
 public class Sistema {
 
@@ -30,10 +31,15 @@ public class Sistema {
     // --------------------- C P U  -  definicoes da CPU -----------------------------------------------------
 
     public enum Opcode {
-        DATA, ___,		    // se memoria nesta posicao tem um dado, usa DATA, se nao usada ee NULO ___
+        DATA, ___,		    // se memoria nesta posicao tem um dado, usa DATA, se não usada é NULO ___
         JMP, JMPI, JMPIG, JMPIL, JMPIE, JMPIM, JMPIGM, JMPILM, JMPIEM, STOP,   // desvios e parada
-        ADDI, SUBI, ADD, SUB, MULT,           // matemáticos
-        LDI, LDD, STD, LDX, STX, SWAP;        // movimentação
+        ADDI, SUBI, ADD, SUB, MULT,             // matemáticos
+        LDI, LDD, STD, LDX, STX, SWAP,          // movimentação
+        TRAP;                                   //
+    }
+
+    public enum Interrupts {
+        INT_NONE, INT_INVALID_INSTRUCTION, INT_INVALID_ADDRESS, INT_OVERFLOW;
     }
 
     public class CPU {
@@ -41,17 +47,20 @@ public class Sistema {
         private int pc; 			// ... composto de program counter,
         private Word ir; 			// instruction register,
         private int[] reg;       	// registradores da CPU
-        // cria variável private int de interrupção ou array
+
+        // cria variável interrupção
+        public Interrupts interrupts;
 
         private Word[] m;   // CPU acessa MEMORIA, guarda referencia 'm' a ela. memoria nao muda. ee sempre a mesma.
 
         public CPU(Word[] _m) {     // ref a MEMORIA e interrupt handler passada na criacao da CPU
             m = _m; 				// usa o atributo 'm' para acessar a memoria.
-            reg = new int[8]; 		// aloca o espaço dos registradores
+            reg = new int[10]; 		// aloca o espaço dos registradores
         }
 
         public void setContext(int _pc) {  // no futuro esta funcao vai ter que ser
-            pc = _pc;                                              // limite e pc (deve ser zero nesta versao)
+            pc = _pc;                                   // limite e pc (deve ser zero nesta versão)
+            this.interrupts = Interrupts.INT_NONE;      // imnicializa interrupção com NONE
         }
 
         private void dump(Word w) {
@@ -70,7 +79,16 @@ public class Sistema {
             System.out.print("           ");  dump(ir);
         }
 
+        private boolean isAddressValid(int address) {
+            if (address < 0 || address >= 1024) {
+                interrupts = Interrupts.INT_INVALID_ADDRESS;
+                return false;
+            }
+            return true;
+        }
+
         public void run() { 		// execucao da CPU supoe que o contexto da CPU, vide acima, esta devidamente setado
+            //System.out.println("Início da execução pela CPU");
 
             while (true) { 			// ciclo de instrucoes. acaba cfe instrucao, veja cada caso.
                 // FETCH
@@ -86,9 +104,14 @@ public class Sistema {
                         break;
 
                     case LDD: // Rd ← [A]
-                        reg[ir.r1] = m[ir.p].p;
-                        pc++;
-                        break;
+                        if (isAddressValid(ir.p))
+                            {
+                                reg[ir.r1] = m[ir.p].p;
+                                pc++;
+                                break;
+                            }
+                        else
+                            break;
 
                     case STD: // [A] ← Rs
                         m[ir.p].opc = Opcode.DATA;
@@ -204,18 +227,35 @@ public class Sistema {
 
                     case STOP: // por enquanto, para execucao
                         break;
+
                     default:
                         // opcode desconhecido
-                        // liga interrup (2)
+                        interrupts = Interrupts.INT_INVALID_INSTRUCTION;
                 }
 
                 // VERIFICA INTERRUPÇÃO !!! - TERCEIRA FASE DO CICLO DE INSTRUÇÕES
-                if (ir.opc==Opcode.STOP) {
+                if (ir.opc==Opcode.STOP)
+                    {
                     break; // break sai do loop da cpu
+                    }
 
-                    // if int ligada - vai para tratamento da int
-                    //     desviar para rotina java que trata int
-                }
+                if (interrupts != Interrupts.INT_NONE)
+                    switch (interrupts){
+                        case INT_INVALID_ADDRESS:
+                            System.out.println("Endereço inválido!");
+                            break;
+
+                        case INT_INVALID_INSTRUCTION:
+                            System.out.println("Comando desconhecido!");
+                            break;
+
+                        case INT_OVERFLOW:
+                            System.out.println("Deu overflow!");
+                            break;
+                    }
+                else
+                    System.out.println("Nenhuma interrupção");
+                break;
             }
         }
     }
@@ -302,9 +342,13 @@ public class Sistema {
     public void roda(Word[] programa){
         monitor.carga(programa, vm.m);
         System.out.println("---------------------------------- programa carregado ");
+
         monitor.dump(vm.m, 0, programa.length);
+        //System.out.println("Dump realizado");
+
         monitor.executa();
         System.out.println("---------------------------------- após execucao ");
+
         monitor.dump(vm.m, 0, programa.length);
     }
 
@@ -317,7 +361,8 @@ public class Sistema {
         Sistema s = new Sistema();
         //s.roda(progs.fibonacci10);           // "progs" significa acesso/referencia ao programa em memoria secundaria
         // s.roda(progs.progMinimo);
-        s.roda(progs.fatorial);
+        //s.roda(progs.fatorial);
+        s.roda(progs.invalidAddressTest);
     }
     // -------------------------------------------------------------------------------------------------------
     // --------------- TUDO ABAIXO DE MAIN É AUXILIAR PARA FUNCIONAMENTO DO SISTEMA - nao faz parte
@@ -342,7 +387,7 @@ public class Sistema {
                 new Word(Opcode.STD, 2, -1, 21), //3 na posição 21 coloca o que está em no reg 2, ou seja coloca 1 na posicao 21
                 new Word(Opcode.LDI, 0, -1, 22), //4 coloca 22 no reg 0
                 new Word(Opcode.LDI, 6, -1, 6), //5 coloca 6 no reg 6 - linha do inicio do loop
-                new Word(Opcode.LDD, 7, -1, 17), //6 coloca 31 no reg 7. É o contador. será a posição one começam os dados, ou seja 20 + a quantidade de números fibonacci que queremos
+                new Word(Opcode.LDD, 7, -1, 17), //6 coloca 17 no reg 7. É o contador. será a posição one começam os dados, ou seja 20 + a quantidade de números fibonacci que queremos
                 // new Word(Opcode.LDI, 7, -1, 31), //6 coloca 31 no reg 7. É o contador. será a posição one começam os dados, ou seja 20 + a quantidade de números fibonacci que queremos
                 new Word(Opcode.LDI, 3, -1, 0), //7 coloca 0 no reg 3
                 new Word(Opcode.ADD, 3, 1, -1), //8
@@ -383,6 +428,10 @@ public class Sistema {
                 new Word(Opcode.STD, 1, -1, 10),     // 8   	coloca valor de r1 na posição 10
                 new Word(Opcode.STOP, -1, -1, -1),    // 9   	stop
                 new Word(Opcode.DATA, -1, -1, -1) };  // 10   ao final o valor do fatorial estará na posição 10 da memória
+
+        public Word[] invalidAddressTest = new Word []{
+                new Word(Opcode.LDD, 0, -1, 1025)
+        };
     }
 }
 
