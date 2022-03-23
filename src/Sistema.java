@@ -104,7 +104,6 @@ public class Sistema {
                 switch (ir.opc) { // para cada opcode, sua execução
 
                     case LDI: // Rd ← k
-                        System.out.println("ldi");
                         reg[ir.r1] = ir.p;
                         pc++;
                         break;
@@ -181,24 +180,30 @@ public class Sistema {
                         break;
 
                     case JMPIGM: // If Rc > 0 Then PC ← [A] Else PC ← PC +1
-                        if (reg[ir.r2] > 0) {
-                            pc = m[ir.p].p;
+                        if (reg[ir.r1] > 0) {
+                            pc = ir.p;
+                        //if (reg[ir.r2] > 0) {
+                        //    pc = m[ir.p].p;
                         } else {
                             pc++;
                         }
                         break;
 
                     case JMPILM: // If Rc < 0 Then PC ← [A] Else PC ← PC +1
-                        if (reg[ir.r2] < 0) {
-                            pc = m[ir.p].p;
+                        if (reg[ir.r1] < 0) {
+                            pc = ir.p;
+                        //if (reg[ir.r2] < 0) {
+                        //    pc = m[ir.p].p;
                         } else {
                             pc++;
                         }
                         break;
 
                     case JMPIEM: // If Rc = 0 Then PC ← [A] Else PC ← PC +1
-                        if (reg[ir.r2] == 0) {
-                            pc = m[ir.p].p;
+                        if (reg[ir.r1] == 0) {
+                            pc = ir.p;
+                        //if (reg[ir.r2] == 0) {
+                        //    pc = m[ir.p].p;
                         } else {
                             pc++;
                         }
@@ -403,9 +408,9 @@ public class Sistema {
         //s.roda(progs.fatorial);
         //s.roda(progs.invalidAddressTest);
         //s.roda(progs.overflowTest);
-        //s.roda(progs.bubbleSort);
+        s.roda(progs.bubbleSort);
         //s.roda(progs.trapTestOutput);
-        s.roda(progs.trapTestInput);
+        //s.roda(progs.trapTestInput);
 
     }
     // -------------------------------------------------------------------------------------------------------
@@ -486,12 +491,12 @@ public class Sistema {
         };
 
         public Word[] bubbleSort = new Word[]{
-                new Word(Opcode.DATA, 5, -1, 43),
-                new Word(Opcode.DATA, 2, -1, 44),
-                new Word(Opcode.DATA, 8, -1, 45),
-                new Word(Opcode.DATA, 4, -1, 46),
-                new Word(Opcode.DATA, 1, -1, 47),
-                new Word(Opcode.DATA, 6, -1, 48),
+                new Word(Opcode.DATA, -1, -1, 41), // jump do primeiro loop gm ou em
+                new Word(Opcode.DATA, -1, -1, 9), // jump do segundo loop gm ou em
+                new Word(Opcode.DATA, -1, -1, 34), // jump do terceiro loop lm
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.LDD, 1, -1, 43),
                 new Word(Opcode.LDI, 2, -1, 0),
                 new Word(Opcode.LDI, 3, -1, 0),
@@ -527,7 +532,15 @@ public class Sistema {
                 new Word(Opcode.ADDI, 6, -1, 1),
                 new Word(Opcode.STX, 6, 5, -1),
                 new Word(Opcode.JMP, -1, -1, 16),
-                new Word(Opcode.STOP, -1, -1, -10)
+                new Word(Opcode.STOP, -1, -1, -1),
+                new Word(Opcode.DATA, 5, -1, 43), // linha 42
+                new Word(Opcode.DATA, 5, -1, 6), // tamanho do vetor
+                new Word(Opcode.DATA, 2, -1, 9), // dados do vetor
+                new Word(Opcode.DATA, 8, -1, 7),
+                new Word(Opcode.DATA, 4, -1, 2),
+                new Word(Opcode.DATA, 1, -1, 1),
+                new Word(Opcode.DATA, 1, -1, 4),
+                new Word(Opcode.DATA, 6, -1, 3)
         };
 
         public Word[] trapTestOutput = new Word[]{
