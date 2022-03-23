@@ -39,7 +39,11 @@ public class Sistema {
     }
 
     public enum Interrupts {
-        INT_NONE, INT_INVALID_INSTRUCTION, INT_INVALID_ADDRESS, INT_OVERFLOW;
+        INT_NONE,
+        INT_INVALID_INSTRUCTION,    // Nunca será usada, pois o Java não deixará compilar
+        INT_INVALID_ADDRESS,        // Nossa memória tem 1024 posições
+        INT_OVERFLOW,               // Nossa memória só trabalha com inteiros, ou seja de -2,147,483,648 até 2,147,483,647
+        INT_SYSTEM_CALL;            // Ativa chamada de I/O pelo comando TRAP
     }
 
     public class CPU {
@@ -90,7 +94,8 @@ public class Sistema {
         public void run() { 		// execucao da CPU supoe que o contexto da CPU, vide acima, esta devidamente setado
             //System.out.println("Início da execução pela CPU");
 
-            while (true) { 			// ciclo de instrucoes. acaba cfe instrucao, veja cada caso.
+            boolean run = true;
+            while (run) { 			// ciclo de instrucoes. acaba cfe instrucao, veja cada caso.
                 // FETCH
                 ir = m[pc]; 	// busca posicao da memoria apontada por pc, guarda em ir
                 //if debug
@@ -99,6 +104,7 @@ public class Sistema {
                 switch (ir.opc) { // para cada opcode, sua execução
 
                     case LDI: // Rd ← k
+                        System.out.println("ldi");
                         reg[ir.r1] = ir.p;
                         pc++;
                         break;
@@ -120,6 +126,7 @@ public class Sistema {
                         break;
 
                     case ADD: // Rd ← Rd + Rs
+                        System.out.println("add_____________");
                         reg[ir.r1] = reg[ir.r1] + reg[ir.r2];
                         pc++;
                         break;
@@ -228,6 +235,15 @@ public class Sistema {
                     case STOP: // por enquanto, para execucao
                         break;
 
+                    case TRAP:
+                        interrupts = Interrupts.INT_SYSTEM_CALL;
+                        pc ++;
+                        break;
+
+                    case DATA:
+                        pc++;
+                        break;
+
                     default:
                         // opcode desconhecido
                         interrupts = Interrupts.INT_INVALID_INSTRUCTION;
@@ -243,19 +259,42 @@ public class Sistema {
                     switch (interrupts){
                         case INT_INVALID_ADDRESS:
                             System.out.println("Endereço inválido!");
+                            run = false;
                             break;
 
+                        // Case implementado, mas nunca será usado, pois em Java não será nem permitido compilar o programa com uma instrução inválida
                         case INT_INVALID_INSTRUCTION:
                             System.out.println("Comando desconhecido!");
+                            run = false;
                             break;
 
                         case INT_OVERFLOW:
                             System.out.println("Deu overflow!");
+                            run = false;
+                            break;
+
+                        case INT_SYSTEM_CALL:
+                            // Entrada (in) (reg[8]=1): o programa lê um inteiro do teclado.
+                            // O parâmetro para IN, em reg[9], é o endereço de memória a armazenar a leitura
+                            // Saída (out) (reg[8]=2): o programa escreve um inteiro na tela.
+                            // O parâmetro para OUT, em reg[9], é o endereço de memória cujo valor deve-se escrever na tela
+
+                            Scanner in = new Scanner(System.in);
+
+                            if (reg[8]==1){
+                                int address_destiny = reg[9];
+                                int value_to_be_written = in.nextInt();
+                                m[address_destiny].p = value_to_be_written;
+                            }
+
+                            if (reg[8]==2){
+                                int source_adress = reg[9];
+                                System.out.println("Output: " + m[source_adress].p);
+                            }
+
                             break;
                     }
-                else
-                    System.out.println("Nenhuma interrupção");
-                break;
+
             }
         }
     }
@@ -362,7 +401,12 @@ public class Sistema {
         //s.roda(progs.fibonacci10);           // "progs" significa acesso/referencia ao programa em memoria secundaria
         // s.roda(progs.progMinimo);
         //s.roda(progs.fatorial);
-        s.roda(progs.invalidAddressTest);
+        //s.roda(progs.invalidAddressTest);
+        //s.roda(progs.overflowTest);
+        //s.roda(progs.bubbleSort);
+        //s.roda(progs.trapTestOutput);
+        s.roda(progs.trapTestInput);
+
     }
     // -------------------------------------------------------------------------------------------------------
     // --------------- TUDO ABAIXO DE MAIN É AUXILIAR PARA FUNCIONAMENTO DO SISTEMA - nao faz parte
@@ -430,8 +474,80 @@ public class Sistema {
                 new Word(Opcode.DATA, -1, -1, -1) };  // 10   ao final o valor do fatorial estará na posição 10 da memória
 
         public Word[] invalidAddressTest = new Word []{
-                new Word(Opcode.LDD, 0, -1, 1025)
+                new Word(Opcode.LDD, 0, -1, 1025),
+                new Word(Opcode.STOP, -1, -1, -1)
         };
+
+        public Word[] overflowTest = new Word []{
+                new Word(Opcode.LDI, 0, -1, 2_147_483_647),
+                new Word(Opcode.LDI, 1, -1, 2_147_483_647),
+                new Word(Opcode.MULT, 0, 1, -1),
+                new Word(Opcode.STOP, -1, -1, -1)
+        };
+
+        public Word[] bubbleSort = new Word[]{
+                new Word(Opcode.DATA, 5, -1, 43),
+                new Word(Opcode.DATA, 2, -1, 44),
+                new Word(Opcode.DATA, 8, -1, 45),
+                new Word(Opcode.DATA, 4, -1, 46),
+                new Word(Opcode.DATA, 1, -1, 47),
+                new Word(Opcode.DATA, 6, -1, 48),
+                new Word(Opcode.LDD, 1, -1, 43),
+                new Word(Opcode.LDI, 2, -1, 0),
+                new Word(Opcode.LDI, 3, -1, 0),
+                new Word(Opcode.LDI, 5, -1, 0),
+                new Word(Opcode.ADD, 5, 2, 0),
+                new Word(Opcode.SUB, 5, 1, 0),
+                new Word(Opcode.JMPIGM, 5, -1, 41),
+                new Word(Opcode.JMPIEM, 5, -1, 41),
+                new Word(Opcode.ADDI, 2, -1, 1),
+                new Word(Opcode.LDI, 3, -1, 0),
+                new Word(Opcode.LDI, 5, -1, 0),
+                new Word(Opcode.ADD, 5, 3, 0),
+                new Word(Opcode.ADDI, 5, -1, 1),
+                new Word(Opcode.SUB, 5, 1, 0),
+                new Word(Opcode.JMPIEM, 5, -1, 9),
+                new Word(Opcode.JMPIGM, 5, -1, 9),
+                new Word(Opcode.LDI, 4, -1, 44),
+                new Word(Opcode.ADD, 4, 3, 0),
+                new Word(Opcode.LDI, 5, -1, 1),
+                new Word(Opcode.ADD, 5, 4, 0),
+                new Word(Opcode.LDX, 4, 4, -1),
+                new Word(Opcode.LDX, 5, 5, -1),
+                new Word(Opcode.ADDI, 3, -1, 1),
+                new Word(Opcode.LDI, 6, -1, 0),
+                new Word(Opcode.ADD, 6, 5, 0),
+                new Word(Opcode.SUB, 6, 4, 1),
+                new Word(Opcode.JMPILM, 6, -1, 34),
+                new Word(Opcode.JMP, -1, -1, 16),
+                new Word(Opcode.SWAP, 5, 4, -1),
+                new Word(Opcode.LDI, 6, -1, 43),
+                new Word(Opcode.ADD, 6, 3, -1),
+                new Word(Opcode.STX, 6, 4, -1),
+                new Word(Opcode.ADDI, 6, -1, 1),
+                new Word(Opcode.STX, 6, 5, -1),
+                new Word(Opcode.JMP, -1, -1, 16),
+                new Word(Opcode.STOP, -1, -1, -10)
+        };
+
+        public Word[] trapTestOutput = new Word[]{
+                new Word(Opcode.LDI, 1, -1, 44),    //coloca 44 no reg 1
+                new Word(Opcode.STD, 1, -1, 6),    // coloca o valor de reg1 na posição 6 da memória
+                new Word(Opcode.LDI, 8, -1, 2),     // coloca 2 em reg 8 para criar um trap de out
+                new Word(Opcode.LDI, 9,-1,6),      // coloca 6 no reg 9, ou seja a posição onde será feita a leitura
+                new Word(Opcode.TRAP,-1,-1,-1),     // faz o output da posição 10
+                new Word(Opcode.STOP, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1)
+        };
+
+        public Word[] trapTestInput = new Word[]{
+                new Word(Opcode.LDI, 8, -1, 1),     // coloca 2 em reg 8 para criar um trap de input
+                new Word(Opcode.LDI, 9,-1,4),      // coloca 4 no reg 9, ou seja a posição onde será feita a escrita
+                new Word(Opcode.TRAP,-1,-1,-1),     // faz o output da posição 10
+                new Word(Opcode.STOP, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1)
+        };
+
     }
 }
 
