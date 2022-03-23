@@ -51,6 +51,7 @@ public class Sistema {
         private int pc; 			// ... composto de program counter,
         private Word ir; 			// instruction register,
         private int[] reg;       	// registradores da CPU
+        public int maxInt;          // criado para podermos simular overflow
 
         // cria variável interrupção
         public Interrupts interrupts;
@@ -60,6 +61,7 @@ public class Sistema {
         public CPU(Word[] _m) {     // ref a MEMORIA e interrupt handler passada na criacao da CPU
             m = _m; 				// usa o atributo 'm' para acessar a memoria.
             reg = new int[10]; 		// aloca o espaço dos registradores
+            maxInt = 1000;
         }
 
         public void setContext(int _pc) {  // no futuro esta funcao vai ter que ser
@@ -125,17 +127,23 @@ public class Sistema {
                         break;
 
                     case ADD: // Rd ← Rd + Rs
-                        System.out.println("add_____________");
                         reg[ir.r1] = reg[ir.r1] + reg[ir.r2];
                         pc++;
                         break;
 
                     case MULT: // Rd ← Rd * Rs
-                        reg[ir.r1] = reg[ir.r1] * reg[ir.r2];
-                        // gera um overflow
-                        // -->  LIGA INT  (1)
-                        pc++;
-                        break;
+                        if (reg[ir.r1] * reg[ir.r2] > maxInt)
+                            {
+                            interrupts = Interrupts.INT_OVERFLOW;
+                            pc++;
+                            break;
+                            }
+                        else
+                            {
+                            reg[ir.r1] = reg[ir.r1] * reg[ir.r2];
+                            pc++;
+                            break;
+                            }
 
                     case ADDI: // Rd ← Rd + k
                         reg[ir.r1] = reg[ir.r1] + ir.p;
@@ -319,6 +327,7 @@ public class Sistema {
             tamMem = 1024;
             m = new Word[tamMem]; // m ee a memoria
             for (int i=0; i<tamMem; i++) { m[i] = new Word(Opcode.___,-1,-1,-1); };
+
             // cpu
             cpu = new CPU(m);   // cpu acessa memória
         }
@@ -388,7 +397,6 @@ public class Sistema {
         System.out.println("---------------------------------- programa carregado ");
 
         monitor.dump(vm.m, 0, programa.length);
-        //System.out.println("Dump realizado");
 
         monitor.executa();
         System.out.println("---------------------------------- após execucao ");
@@ -407,9 +415,9 @@ public class Sistema {
         // s.roda(progs.progMinimo);
         //s.roda(progs.fatorial);
         //s.roda(progs.invalidAddressTest);
-        //s.roda(progs.overflowTest);
+        s.roda(progs.overflowTest);
         //s.roda(progs.bubbleSort);
-        s.roda(progs.bubbleSort2);
+        //s.roda(progs.bubbleSort2);
         //s.roda(progs.trapTestOutput);
         //s.roda(progs.trapTestInput);
 
@@ -485,8 +493,8 @@ public class Sistema {
         };
 
         public Word[] overflowTest = new Word []{
-                new Word(Opcode.LDI, 0, -1, 2_147_483_647),
-                new Word(Opcode.LDI, 1, -1, 2_147_483_647),
+                new Word(Opcode.LDI, 0, -1, 800),
+                new Word(Opcode.LDI, 1, -1, 800),
                 new Word(Opcode.MULT, 0, 1, -1),
                 new Word(Opcode.STOP, -1, -1, -1)
         };
