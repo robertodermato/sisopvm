@@ -411,13 +411,17 @@ public class Sistema {
     // ------------------- instancia e testa sistema
     public static void main(String args[]) {
         Sistema s = new Sistema();
+        // Desenvolvidos pelo professor
         //s.roda(progs.fibonacci10);           // "progs" significa acesso/referencia ao programa em memoria secundaria
         // s.roda(progs.progMinimo);
         //s.roda(progs.fatorial);
+
+        // Desenvolvidos pelo grupo
+        s.roda(progs.bubbleSort);
+
+        // Testes de Funcionalidades
         //s.roda(progs.invalidAddressTest);
-        s.roda(progs.overflowTest);
-        //s.roda(progs.bubbleSort);
-        //s.roda(progs.bubbleSort2);
+        //s.roda(progs.overflowTest);
         //s.roda(progs.trapTestOutput);
         //s.roda(progs.trapTestInput);
 
@@ -500,92 +504,39 @@ public class Sistema {
         };
 
         public Word[] bubbleSort = new Word[]{
-                new Word(Opcode.DATA, -1, -1, 41), // jump do primeiro loop gm ou em
-                new Word(Opcode.DATA, -1, -1, 9), // jump do segundo loop gm ou em
-                new Word(Opcode.DATA, -1, -1, 34), // jump do terceiro loop lm
+                new Word(Opcode.DATA, -1, -1, 41),  // jump do primeiro loop gm ou em
+                new Word(Opcode.DATA, -1, -1, 9),   // jump do segundo loop gm ou em
+                new Word(Opcode.DATA, -1, -1, 34),  // jump do terceiro loop lm
                 new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.LDD, 1, -1, 43),
                 new Word(Opcode.LDI, 2, -1, 0),
                 new Word(Opcode.LDI, 3, -1, 0),
-                new Word(Opcode.LDI, 5, -1, 0),
-                new Word(Opcode.ADD, 5, 2, 0),
-                new Word(Opcode.SUB, 5, 1, 0),
-                new Word(Opcode.JMPIGM, 5, -1, 41),
-                new Word(Opcode.JMPIEM, 5, -1, 41),
-                new Word(Opcode.ADDI, 2, -1, 1),
-                new Word(Opcode.LDI, 3, -1, 0),
-                new Word(Opcode.LDI, 5, -1, 0),
-                new Word(Opcode.ADD, 5, 3, 0),
-                new Word(Opcode.ADDI, 5, -1, 1),
-                new Word(Opcode.SUB, 5, 1, 0),
-                new Word(Opcode.JMPIEM, 5, -1, 9),
-                new Word(Opcode.JMPIGM, 5, -1, 9),
-                new Word(Opcode.LDI, 4, -1, 44),
-                new Word(Opcode.ADD, 4, 3, 0),
-                new Word(Opcode.LDI, 5, -1, 1),
-                new Word(Opcode.ADD, 5, 4, 0),
-                new Word(Opcode.LDX, 4, 4, -1),
-                new Word(Opcode.LDX, 5, 5, -1),
-                new Word(Opcode.ADDI, 3, -1, 1),
-                new Word(Opcode.LDI, 6, -1, 0),
-                new Word(Opcode.ADD, 6, 5, 0),
-                new Word(Opcode.SUB, 6, 4, 1),
-                new Word(Opcode.JMPILM, 6, -1, 34),
-                new Word(Opcode.JMP, -1, -1, 16),
-                new Word(Opcode.SWAP, 5, 4, -1),
-                new Word(Opcode.LDI, 6, -1, 43),
-                new Word(Opcode.ADD, 6, 3, -1),
-                new Word(Opcode.STX, 6, 4, -1),
-                new Word(Opcode.ADDI, 6, -1, 1),
-                new Word(Opcode.STX, 6, 5, -1),
-                new Word(Opcode.JMP, -1, -1, 16),
-                new Word(Opcode.STOP, -1, -1, -1),
-                new Word(Opcode.DATA, 5, -1, 43), // linha 42
-                new Word(Opcode.DATA, 5, -1, 6), // tamanho do vetor
-                new Word(Opcode.DATA, 2, -1, 9), // dados do vetor
-                new Word(Opcode.DATA, 8, -1, 7),
-                new Word(Opcode.DATA, 4, -1, 2),
-                new Word(Opcode.DATA, 1, -1, 1),
-                new Word(Opcode.DATA, 1, -1, 4),
-                new Word(Opcode.DATA, 6, -1, 3)
-        };
-
-        public Word[] bubbleSort2 = new Word[]{
-                new Word(Opcode.DATA, -1, -1, 41), // jump do primeiro loop gm ou em
-                new Word(Opcode.DATA, -1, -1, 9), // jump do segundo loop gm ou em
-                new Word(Opcode.DATA, -1, -1, 34), // jump do terceiro loop lm
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.LDD, 1, -1, 43),
-                new Word(Opcode.LDI, 2, -1, 0),
-                new Word(Opcode.LDI, 3, -1, 0),
-                new Word(Opcode.LDI, 5, -1, 0), // linha 0. Início loop 1
-                new Word(Opcode.ADD, 5, 2, 0),
-                new Word(Opcode.SUB, 5, 1, 0),
-                new Word(Opcode.JMPIGM, -1, 5, 0), // linha 12 - pula pra linha 41 que é o fim (armazenado na memória [0])
+                new Word(Opcode.LDI, 5, -1, 0),     // linha 9. Início loop 1
+                new Word(Opcode.ADD, 5, 2, -1),
+                new Word(Opcode.SUB, 5, 1, -1),
+                new Word(Opcode.JMPIGM, -1, 5, 0),  // linha 12 - pula pra linha 41 que é o fim (armazenado na memória [0])
                 new Word(Opcode.JMPIEM, -1, 5, 0),
                 new Word(Opcode.ADDI, 2, -1, 1),
-                new Word(Opcode.LDI, 3, -1, 0),
+                new Word(Opcode.LDI, 3, -1, 0),     // linha 15
                 new Word(Opcode.LDI, 5, -1, 0),
-                new Word(Opcode.ADD, 5, 3, 0),
+                new Word(Opcode.ADD, 5, 3, -1),
                 new Word(Opcode.ADDI, 5, -1, 1),
-                new Word(Opcode.SUB, 5, 1, 0),
-                new Word(Opcode.JMPIEM, -1, 5, 1), // linha 20. Pula pra linha 9 (armazenado na memória [1]). Loop 1
+                new Word(Opcode.SUB, 5, 1, -1),
+                new Word(Opcode.JMPIEM, -1, 5, 1),  // linha 20. Pula pra linha 9 (armazenado na memória [1]). Loop 1
                 new Word(Opcode.JMPIGM, -1, 5, 1),
                 new Word(Opcode.LDI, 4, -1, 44),
-                new Word(Opcode.ADD, 4, 3, 0),
+                new Word(Opcode.ADD, 4, 3, -1),
                 new Word(Opcode.LDI, 5, -1, 1),
-                new Word(Opcode.ADD, 5, 4, 0),
+                new Word(Opcode.ADD, 5, 4, -1),
                 new Word(Opcode.LDX, 4, 4, -1),
                 new Word(Opcode.LDX, 5, 5, -1),
                 new Word(Opcode.ADDI, 3, -1, 1),
                 new Word(Opcode.LDI, 6, -1, 0),
-                new Word(Opcode.ADD, 6, 5, 0),
-                new Word(Opcode.SUB, 6, 4, 1),
-                new Word(Opcode.JMPILM, -1, 6, 2), // linha 32. pula pra linha 34 (amazenado na memroai [2])
+                new Word(Opcode.ADD, 6, 5, -1),
+                new Word(Opcode.SUB, 6, 4, -1),
+                new Word(Opcode.JMPILM, -1, 6, 2), // linha 32. pula pra linha 34 (amazenado na memória [2])
                 new Word(Opcode.JMP, -1, -1, 16),
                 new Word(Opcode.SWAP, 5, 4, -1),
                 new Word(Opcode.LDI, 6, -1, 43),
@@ -597,9 +548,9 @@ public class Sistema {
                 new Word(Opcode.STOP, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1), // linha 42. não usada
                 new Word(Opcode.DATA, -1, -1, 6), // tamanho do vetor
-                new Word(Opcode.DATA, -1, -1, 5), // dados do vetor
+                new Word(Opcode.DATA, -1, -1, 12), // dados do vetor a partir daqui até o final
                 new Word(Opcode.DATA, -1, -1, 7),
-                new Word(Opcode.DATA, -1, -1, 2),
+                new Word(Opcode.DATA, -1, -1, 9),
                 new Word(Opcode.DATA, -1, -1, 1),
                 new Word(Opcode.DATA, -1, -1, 4),
                 new Word(Opcode.DATA, -1, -1, 3)
