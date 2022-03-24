@@ -85,6 +85,14 @@ public class Sistema {
             System.out.print("           ");  dump(ir);
         }
 
+        private boolean isRegisterValid(int register){
+            if (register < 0 || register >= reg.length) {
+                interrupts = Interrupts.INT_INVALID_INSTRUCTION;
+                return false;
+            }
+            return true;
+        }
+
         private boolean isAddressValid(int address) {
             if (address < 0 || address >= 1024) {
                 interrupts = Interrupts.INT_INVALID_ADDRESS;
@@ -111,7 +119,7 @@ public class Sistema {
                         break;
 
                     case LDD: // Rd ← [A]
-                        if (isAddressValid(ir.p))
+                        if (isAddressValid(ir.p) && isRegisterValid(ir.r1))
                             {
                                 reg[ir.r1] = m[ir.p].p;
                                 pc++;
@@ -275,9 +283,9 @@ public class Sistema {
                             run = false;
                             break;
 
-                        // Case implementado, mas nunca será usado, pois em Java não será nem permitido compilar o programa com uma instrução inválida
+                        // Consideramos, além de uma instrução inválida, o uso de um registrador inválido também
                         case INT_INVALID_INSTRUCTION:
-                            System.out.println("Comando desconhecido!");
+                            System.out.println("Comando desconhecido ou registrador inválido!");
                             run = false;
                             break;
 
@@ -417,13 +425,16 @@ public class Sistema {
         //s.roda(progs.fatorial);
 
         // Desenvolvidos pelo grupo
-        s.roda(progs.bubbleSort);
+        //s.roda(progs.fibonacci2);
+        //s.roda(progs.fatorial2);
+        //s.roda(progs.bubbleSort);
 
         // Testes de Funcionalidades
         //s.roda(progs.invalidAddressTest);
         //s.roda(progs.overflowTest);
         //s.roda(progs.trapTestOutput);
         //s.roda(progs.trapTestInput);
+        s.roda(progs.invalidRegisterTest);
 
     }
     // -------------------------------------------------------------------------------------------------------
@@ -572,6 +583,11 @@ public class Sistema {
                 new Word(Opcode.TRAP,-1,-1,-1),     // faz o output da posição 10
                 new Word(Opcode.STOP, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1)
+        };
+
+        public Word[] invalidRegisterTest = new Word[]{
+                new Word(Opcode.LDD, 11, -1, 1),
+                new Word(Opcode.STOP, -1, -1, -1)
         };
 
     }
