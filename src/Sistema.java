@@ -101,6 +101,14 @@ public class Sistema {
             return true;
         }
 
+        private boolean isNumberValid(int number) {
+            if (number < maxInt * -1 || number > maxInt) {
+                interrupts = Interrupts.INT_OVERFLOW;
+                return false;
+            }
+            return true;
+        }
+
         public void run() { 		// execucao da CPU supoe que o contexto da CPU, vide acima, esta devidamente setado
             //System.out.println("Início da execução pela CPU");
 
@@ -161,12 +169,11 @@ public class Sistema {
 
                     case MULT: // Rd ← Rd * Rs
                         if (isRegisterValid(ir.r2) && isRegisterValid(ir.r1)) {
-                            if (reg[ir.r1] * reg[ir.r2] > maxInt || reg[ir.r1] > maxInt || reg[ir.r2] > maxInt) {
-                                interrupts = Interrupts.INT_OVERFLOW;
+                            if (isNumberValid(reg[ir.r1] * reg[ir.r2]) && isNumberValid(reg[ir.r1]) && isNumberValid(reg[ir.r2])) {
+                                reg[ir.r1] = reg[ir.r1] * reg[ir.r2];
                                 pc++;
                                 break;
                             } else {
-                                reg[ir.r1] = reg[ir.r1] * reg[ir.r2];
                                 pc++;
                                 break;
                             }
@@ -521,11 +528,11 @@ public class Sistema {
         // Fase 1
         //s.roda(progs.fibonacci2);
         //s.roda(progs.fatorial2);
-        s.roda(progs.bubbleSort);
+        //s.roda(progs.bubbleSort);
 
         // Fase 2 - Testes de Interrupções
         //s.roda(progs.invalidAddressTest);
-        //s.roda(progs.overflowTest);
+        s.roda(progs.overflowTest);
         //s.roda(progs.invalidRegisterTest);
 
         // Fase 3 - Testes de Chamadas de Sistema
