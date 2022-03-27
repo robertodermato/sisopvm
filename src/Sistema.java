@@ -114,9 +114,13 @@ public class Sistema {
                 switch (ir.opc) { // para cada opcode, sua execução
 
                     case LDI: // Rd ← k
-                        reg[ir.r1] = ir.p;
-                        pc++;
-                        break;
+                        if (isAddressValid(ir.p) && isRegisterValid(ir.r1)) {
+                            reg[ir.r1] = ir.p;
+                            pc++;
+                            break;
+                        }
+                        else
+                            break;
 
                     case LDD: // Rd ← [A]
                         if (isAddressValid(ir.p) && isRegisterValid(ir.r1))
@@ -129,55 +133,113 @@ public class Sistema {
                             break;
 
                     case STD: // [A] ← Rs
-                        m[ir.p].opc = Opcode.DATA;
-                        m[ir.p].p = reg[ir.r1];
-                        pc++;
-                        break;
+                        if (isAddressValid(ir.p) && isRegisterValid(ir.r1)) {
+                            m[ir.p].opc = Opcode.DATA;
+                            m[ir.p].p = reg[ir.r1];
+                            pc++;
+                            break;
+                        }
+                        else
+                            break;
 
                     case ADD: // Rd ← Rd + Rs
-                        reg[ir.r1] = reg[ir.r1] + reg[ir.r2];
-                        pc++;
-                        break;
+                        if (isRegisterValid(ir.r2) && isRegisterValid(ir.r1)) {
+                            if (reg[ir.r1] + reg[ir.r2] > maxInt || reg[ir.r1] > maxInt || reg[ir.r2] > maxInt) {
+                                interrupts = Interrupts.INT_OVERFLOW;
+                                pc++;
+                                break;
+                            }
+                            else
+                            {
+                                reg[ir.r1] = reg[ir.r1] + reg[ir.r2];
+                                pc++;
+                                break;
+                            }
+                        }
+                        else
+                            break;
 
                     case MULT: // Rd ← Rd * Rs
-                        if (reg[ir.r1] * reg[ir.r2] > maxInt)
-                            {
-                            interrupts = Interrupts.INT_OVERFLOW;
-                            pc++;
-                            break;
+                        if (isRegisterValid(ir.r2) && isRegisterValid(ir.r1)) {
+                            if (reg[ir.r1] * reg[ir.r2] > maxInt || reg[ir.r1] > maxInt || reg[ir.r2] > maxInt) {
+                                interrupts = Interrupts.INT_OVERFLOW;
+                                pc++;
+                                break;
+                            } else {
+                                reg[ir.r1] = reg[ir.r1] * reg[ir.r2];
+                                pc++;
+                                break;
                             }
+                        }
                         else
-                            {
-                            reg[ir.r1] = reg[ir.r1] * reg[ir.r2];
-                            pc++;
                             break;
-                            }
 
                     case ADDI: // Rd ← Rd + k
-                        reg[ir.r1] = reg[ir.r1] + ir.p;
-                        pc++;
-                        break;
+                        if (isRegisterValid(ir.r1)) {
+                            if (reg[ir.r1] + ir.p > maxInt || reg[ir.r1] > maxInt || ir.p > maxInt) {
+                                interrupts = Interrupts.INT_OVERFLOW;
+                                pc++;
+                                break;
+                            }
+                            else {
+                                reg[ir.r1] = reg[ir.r1] + ir.p;
+                                pc++;
+                                break;
+                            }
+                        }
+                        else
+                            break;
 
                     case STX: // [Rd] ←Rs
-                        m[reg[ir.r1]].opc = Opcode.DATA;
-                        m[reg[ir.r1]].p = reg[ir.r2];
-                        pc++;
-                        break;
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isAddressValid(reg[ir.r1])) {
+                            m[reg[ir.r1]].opc = Opcode.DATA;
+                            m[reg[ir.r1]].p = reg[ir.r2];
+                            pc++;
+                            break;
+                        }
+                        else
+                            break;
 
                     case LDX: // Rd ← [Rs]
-                        reg[ir.r1] = m[reg[ir.r2]].p;
-                        pc++;
-                        break;
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isAddressValid(reg[ir.r2])) {
+                            reg[ir.r1] = m[reg[ir.r2]].p;
+                            pc++;
+                            break;
+                        }
+                        else
+                            break;
 
                     case SUB: // Rd ← Rd - Rs
-                        reg[ir.r1] = reg[ir.r1] - reg[ir.r2];
-                        pc++;
-                        break;
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2)) {
+                            if (reg[ir.r1] > maxInt || reg[ir.r2] > maxInt) {
+                                interrupts = Interrupts.INT_OVERFLOW;
+                                pc++;
+                                break;
+                            }
+                            else {
+                                reg[ir.r1] = reg[ir.r1] - reg[ir.r2];
+                                pc++;
+                                break;
+                            }
+                        }
+                        else
+                            break;
 
                     case SUBI: // Rd ← Rd - k
-                        reg[ir.r1] = reg[ir.r1] - ir.p;
-                        pc++;
-                        break;
+                        if (isRegisterValid(ir.r1)) {
+                            if (reg[ir.r1] > maxInt || ir.p > maxInt) {
+                                interrupts = Interrupts.INT_OVERFLOW;
+                                pc++;
+                                break;
+                            }
+                            else {
+                                reg[ir.r1] = reg[ir.r1] - ir.p;
+                                pc++;
+                                break;
+                            }
+                        }
+                        else
+                            break;
 
                     case JMP: //  PC ← k
                         pc = ir.p;
@@ -421,7 +483,7 @@ public class Sistema {
         Sistema s = new Sistema();
         // Desenvolvidos pelo professor
         //s.roda(progs.fibonacci10);           // "progs" significa acesso/referencia ao programa em memoria secundaria
-        // s.roda(progs.progMinimo);
+        //s.roda(progs.progMinimo);
         //s.roda(progs.fatorial);
 
         // Fase 1
