@@ -5,7 +5,7 @@
 // Fase 1 - máquina virtual (vide enunciado correspondente)
 //
 
-import java.sql.SQLOutput;
+
 import java.util.*;
 public class Sistema {
 
@@ -61,7 +61,7 @@ public class Sistema {
         public CPU(Word[] _m) {     // ref a MEMORIA e interrupt handler passada na criacao da CPU
             m = _m; 				// usa o atributo 'm' para acessar a memoria.
             reg = new int[10]; 		// aloca o espaço dos registradores
-            maxInt = 1000;
+            maxInt = 1000;          // números aceitos -1000 até 1000
         }
 
         public void setContext(int _pc) {  // no futuro esta funcao vai ter que ser
@@ -526,13 +526,13 @@ public class Sistema {
         //s.roda(progs.fatorial);
 
         // Fase 1
-        //s.roda(progs.fibonacci2);
+        s.roda(progs.fibonacci2);
         //s.roda(progs.fatorial2);
         //s.roda(progs.bubbleSort);
 
         // Fase 2 - Testes de Interrupções
         //s.roda(progs.invalidAddressTest);
-        s.roda(progs.overflowTest);
+        //s.roda(progs.overflowTest);
         //s.roda(progs.invalidRegisterTest);
 
         // Fase 3 - Testes de Chamadas de Sistema
@@ -576,7 +576,7 @@ public class Sistema {
                 new Word(Opcode.JMPIG, 6, 7, -1), //15 se r7 maior que 0 então pc recebe 6, else pc = pc + 1
                 new Word(Opcode.STOP, -1, -1, -1),   // POS 16
                 new Word(Opcode.DATA, -1, -1, 31), //17 numeros de fibonacci a serem calculados menos 20
-                new Word(Opcode.DATA, -1, -1, -1), //18
+                new Word(Opcode.DATA, -1, -1, -1), //18 números de fibonacci a serem calculados
                 new Word(Opcode.DATA, -1, -1, -1), //19
                 new Word(Opcode.DATA, -1, -1, -1),   // POS 20
                 new Word(Opcode.DATA, -1, -1, -1), //21
@@ -588,6 +588,65 @@ public class Sistema {
                 new Word(Opcode.DATA, -1, -1, -1), //27
                 new Word(Opcode.DATA, -1, -1, -1), //28
                 new Word(Opcode.DATA, -1, -1, -1),  // ate aqui - serie de fibonacci ficara armazenada //29
+                new Word(Opcode.DATA, -1, -1, -1)
+        };
+
+        // programa que lê o número na posição 21 da memória:
+        // - se número < 0: coloca -1 no início da posição de memória para saída, que é 23;
+        // - se número > 0: este é o número de valores da sequencia de fibonacci a serem escritos
+        // Lembrando que mais 20 números gerará overflow em nosso sistema
+        public Word[] fibonacci2 = new Word[] { // mesmo que prog exemplo, so que usa r0 no lugar de r8
+                new Word(Opcode.LDD, 4, -1, 22),    // 0- onde 22 é a posição da memória onde esta a quantidade de números Fibonacci a serem calculados
+
+                // testa se número é menor que 0, e se for manda para final do programa
+                new Word(Opcode.JMPILM, -1, 4, 23), // 1- pula para a linha amrazenada em [23], que é a linha de final do programa, se r4<0
+
+                new Word(Opcode.ADDI, 4, -1, 24),   // 2- onde 24 é a primeira posição da memória com dados da fibonacci
+                new Word(Opcode.STD, 4, -1, 21),    // 3- armazena o contador na posição 21 da memória
+
+                // armazena valores iniciais da Fibonacci
+                new Word(Opcode.LDI, 1, -1, 0),     // 4- coloca 0 no reg 1
+                new Word(Opcode.STD, 1, -1, 24),    // 5- 23 posicao de memoria onde inicia a serie de fibonacci gerada, ou seja coloca valor de reg 1 (0) na posicao 23
+                new Word(Opcode.LDI, 2, -1, 1),     // 6- coloca 1 no reg 2
+                new Word(Opcode.STD, 2, -1, 25),    // 7- na posição 24 coloca o que está em no reg 2, ou seja coloca 1 na posicao 24
+                new Word(Opcode.LDI, 0, -1, 26),    // 8- coloca 25 no reg 0
+
+                // início do loop
+                new Word(Opcode.LDI, 6, -1, 10),    // 9- coloca 9 no reg 6, onde 9 é a linha do início do loop
+                new Word(Opcode.LDD, 7, -1, 21),    // 10- coloca 20 no reg 7. É a posição do o contador.
+                new Word(Opcode.LDI, 3, -1, 0),     // 11- coloca 0 no reg 3
+                new Word(Opcode.ADD, 3, 1, -1),     // 12-
+                new Word(Opcode.LDI, 1, -1, 0),     // 13-
+                new Word(Opcode.ADD, 1, 2, -1),     // 14- 0 add reg 1 + reg 2
+                new Word(Opcode.ADD, 2, 3, -1),     // 15- 1 add reg 2 + reg 3
+                new Word(Opcode.STX, 0, 2, -1),     // 16- coloca o que está em reg 2 (1) na posição  memória do reg 0 (22), ou seja coloca 1 na pos 22
+                new Word(Opcode.ADDI, 0, -1, 1),    // 17- add 1 no reg 0, ou seja reg fica com 23. Isso serve para mudar a posição da memória onde virá o próximo numero fbonacci
+                new Word(Opcode.SUB, 7, 0, -1),     // 18- reg 7 = reg 7 - o que esta no reg 0, ou seja 30 menos 23 e coloca em r7. Isso é o contador regressivo que fica em r7. se for 0, pára
+                new Word(Opcode.JMPIG, 6, 7, -1),   // 19- se r7 maior que 0 então pc recebe 6, else pc = pc + 1
+                new Word(Opcode.STOP, -1, -1, -1),  // 20- fim
+
+                // memória
+                new Word(Opcode.DATA, -1, -1, -1),  // 21- posição do contador
+                new Word(Opcode.DATA, -1, -1, 8),   // 22- números Fibonacci a serem calculados
+                new Word(Opcode.DATA, -1, -1, 20),  // 23- linha do final do programa
+                new Word(Opcode.DATA, -1, -1, -1),  // 24- início do armazenamento da sequência Fibonacci
+                new Word(Opcode.DATA, -1, -1, -1),  // 25-
+                new Word(Opcode.DATA, -1, -1, -1),  // 26-
+                new Word(Opcode.DATA, -1, -1, -1),  // 27-
+                new Word(Opcode.DATA, -1, -1, -1),  // 28-
+                new Word(Opcode.DATA, -1, -1, -1),  //...
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
+                new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1)
         };
 
