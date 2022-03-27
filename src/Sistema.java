@@ -531,7 +531,7 @@ public class Sistema {
 
         // Fase 1
         //s.roda(progs.fibonacci2);
-        //s.roda(progs.fatorial2);
+        s.roda(progs.fatorial2);
         //s.roda(progs.bubbleSort);
 
         // Fase 2 - Testes de Interrupções
@@ -541,7 +541,7 @@ public class Sistema {
 
         // Fase 3 - Testes de Chamadas de Sistema
         //s.roda(progs.trapTestOutput);
-        s.roda(progs.trapTestInput);
+        //s.roda(progs.trapTestInput);
 
 
     }
@@ -653,6 +653,32 @@ public class Sistema {
                 new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1)
         };
+
+        // Dado um inteiro em na posição X da memória,
+        // se for negativo armazena -1 na saída; se for positivo responde o fatorial do número na saída
+        public Word[] fatorial2 = new Word[] { 	 // este fatorial so aceita valores positivos.   nao pode ser zero
+                new Word(Opcode.DATA, -1, -1, 5),   // 0- número a ser calculado o fatorial
+                new Word(Opcode.DATA, -1, -1, 15),  // 1- armazena o final do programa
+                new Word(Opcode.LDD, 0, -1, 0),     // 2- coloca em reg 0 o valor da memória na posição 0
+                new Word(Opcode.LDI, 1, -1, -1),    // 3- deixa reg 1 com -1 por padrão
+
+                // testa se número é menor que 0, e se for manda para final do programa
+                new Word(Opcode.JMPILM, -1, 0, 1),  // 4- pula para a linha amrazenada em [1], que é a linha de final do programa, se r0<0
+
+                new Word(Opcode.LDI, 1, -1, 1),      // 5   	r1 é 1 para multiplicar (por r0)
+                new Word(Opcode.LDI, 6, -1, 1),      // 6   	r6 é 1 para ser o decremento
+                new Word(Opcode.LDI, 7, -1, 12),     // 7   	r7 tem posicao de stop do programa
+
+                // início do loop
+                new Word(Opcode.JMPIE, 7, 0, 0),     // 8   	se r0=0 pula para r7(=12)
+                new Word(Opcode.MULT, 1, 0, -1),     // 9   	r1 = r1 * r0
+                new Word(Opcode.SUB, 0, 6, -1),      // 10   	decrementa r0 1
+                new Word(Opcode.JMP, -1, -1, 8),     // 11   	vai p posicao 8, que é o início do loop
+
+                new Word(Opcode.STD, 1, -1, 14),      // 12   	coloca valor de r1 na posição 14
+                new Word(Opcode.STOP, -1, -1, -1),    // 13   	stop
+                new Word(Opcode.DATA, -1, -1, -1) };  // 14   ao final o valor do fatorial estará na posição 10 da memória
+
 
         public Word[] fatorial = new Word[] { 	 // este fatorial so aceita valores positivos.   nao pode ser zero
                 // linha   coment
