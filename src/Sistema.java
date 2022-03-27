@@ -131,7 +131,7 @@ public class Sistema {
                             break;
 
                     case LDD: // Rd ← [A]
-                        if (isAddressValid(ir.p) && isRegisterValid(ir.r1))
+                        if (isRegisterValid(ir.r1) && isAddressValid(ir.p))
                             {
                                 reg[ir.r1] = m[ir.p].p;
                                 pc++;
@@ -141,7 +141,7 @@ public class Sistema {
                             break;
 
                     case STD: // [A] ← Rs
-                        if (isAddressValid(ir.p) && isRegisterValid(ir.r1)) {
+                        if (isRegisterValid(ir.r1) && isAddressValid(ir.p)) {
                             m[ir.p].opc = Opcode.DATA;
                             m[ir.p].p = reg[ir.r1];
                             pc++;
@@ -266,7 +266,7 @@ public class Sistema {
 
 
                     case JMPIG: // If Rc > 0 Then PC ← Rs Else PC ← PC +1
-                        if (isAddressValid(reg[ir.r1])) {
+                        if (isRegisterValid(ir.r2) && isRegisterValid(ir.r1) && isAddressValid(reg[ir.r1])) {
                             if (reg[ir.r2] > 0) {
                                 pc = reg[ir.r1];
                             } else {
@@ -278,7 +278,7 @@ public class Sistema {
                             break;
 
                     case JMPIGM: // If Rc > 0 Then PC ← [A] Else PC ← PC +1
-                        if (isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
+                        if (isRegisterValid(ir.r2) && isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
                             if (reg[ir.r2] > 0) {
                                 pc = m[ir.p].p;
                             } else {
@@ -290,7 +290,7 @@ public class Sistema {
                             break;
 
                     case JMPILM: // If Rc < 0 Then PC ← [A] Else PC ← PC +1
-                        if (isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
+                        if (isRegisterValid(ir.r2) && isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
                             if (reg[ir.r2] < 0) {
                                 pc = m[ir.p].p;
                             } else {
@@ -302,7 +302,7 @@ public class Sistema {
                             break;
 
                     case JMPIEM: // If Rc = 0 Then PC ← [A] Else PC ← PC +1
-                        if (isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
+                        if (isRegisterValid(ir.r2) && isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
                             if (reg[ir.r2] == 0) {
                                 pc = m[ir.p].p;
                             } else {
@@ -315,7 +315,7 @@ public class Sistema {
 
 
                     case JMPIE: // If Rc = 0 Then PC ← Rs Else PC ← PC +1
-                        if (isAddressValid(reg[ir.r1])) {
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isAddressValid(reg[ir.r1])) {
                             if (reg[ir.r2] == 0) {
                                 pc = reg[ir.r1];
                             } else {
@@ -327,7 +327,7 @@ public class Sistema {
                             break;
 
                     case JMPIL: //  PC ← Rs
-                        if (isAddressValid(reg[ir.r1])) {
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isAddressValid(reg[ir.r1])) {
                             if (reg[ir.r2] < 0) {
                                 pc = reg[ir.r1];
                             } else {
@@ -347,12 +347,16 @@ public class Sistema {
                             break;
 
                     case SWAP: // t <- r1; r1 <- r2; r2 <- t
-                        int temp;
-                        temp = reg[ir.r1];
-                        reg[ir.r1] = reg[ir.r2];
-                        reg [ir.r2] = temp;
-                        pc ++;
-                        break;
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2)) {
+                            int temp;
+                            temp = reg[ir.r1];
+                            reg[ir.r1] = reg[ir.r2];
+                            reg[ir.r2] = temp;
+                            pc++;
+                            break;
+                        }
+                        else
+                            break;
 
                     case STOP: // por enquanto, para execucao
                         break;
@@ -526,7 +530,7 @@ public class Sistema {
         //s.roda(progs.fatorial);
 
         // Fase 1
-        s.roda(progs.fibonacci2);
+        //s.roda(progs.fibonacci2);
         //s.roda(progs.fatorial2);
         //s.roda(progs.bubbleSort);
 
@@ -537,7 +541,7 @@ public class Sistema {
 
         // Fase 3 - Testes de Chamadas de Sistema
         //s.roda(progs.trapTestOutput);
-        //s.roda(progs.trapTestInput);
+        s.roda(progs.trapTestInput);
 
 
     }
