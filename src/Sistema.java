@@ -827,12 +827,17 @@ public class Sistema {
         // Dado um inteiro em na posição X da memória,
         // se for negativo armazena -1 na saída; se for positivo responde o fatorial do número na saída
         public Word[] fatorialComInput = new Word[] { 	 // este fatorial so aceita valores positivos.   nao pode ser zero
-                // input
-                new Word(Opcode.LDI, 8, -1, 2),     // coloca 2 em reg 8 para criar um trap de out
-                new Word(Opcode.LDI, 9,-1,33),      // coloca 6 no reg 9, ou seja a posição onde será feita a leitura
-                new Word(Opcode.TRAP,-1,-1,-1),     // faz o output da posição 10
+                // Entrada (in) (reg[8]=1): o programa lê um inteiro do teclado.
+                // O parâmetro para IN, em reg[9], é o endereço de memória a armazenar a leitura
+                // Saída (out) (reg[8]=2): o programa escreve um inteiro na tela.
+                // O parâmetro para OUT, em reg[9], é o endereço de memória cujo valor deve-se escrever na tela
 
-                new Word(Opcode.DATA, -1, -1, 5),   // 0- número a ser calculado o fatorial
+                // input
+                new Word(Opcode.LDI, 8, -1, 1),    // 0- coloca 1 em reg 8 para criar um trap de input
+                new Word(Opcode.LDI, 9,-1,4),      // 1- coloca 4 no reg 9, ou seja a posição onde será feita a escrita do input
+                new Word(Opcode.TRAP,-1,-1,-1),    // 2- faz o input
+
+                new Word(Opcode.DATA, -1, -1, -1),   // 0- número a ser calculado o fatorial
                 new Word(Opcode.DATA, -1, -1, 15),  // 1- armazena o final do programa
                 new Word(Opcode.LDD, 0, -1, 0),     // 2- coloca em reg 0 o valor da memória na posição 0
                 new Word(Opcode.LDI, 1, -1, -1),    // 3- deixa reg 1 com -1 por padrão
