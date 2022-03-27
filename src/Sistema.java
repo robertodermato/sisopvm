@@ -122,7 +122,7 @@ public class Sistema {
                 switch (ir.opc) { // para cada opcode, sua execução
 
                     case LDI: // Rd ← k
-                        if (isAddressValid(ir.p) && isRegisterValid(ir.r1)) {
+                        if (isRegisterValid(ir.r1)) {
                             reg[ir.r1] = ir.p;
                             pc++;
                             break;
@@ -257,8 +257,8 @@ public class Sistema {
                             break;
 
                     case JMPI: //  PC ← Rs
-                        if (isAddressValid(ir.r1)) {
-                            pc = ir.r1;
+                        if (isRegisterValid(ir.r1) && isAddressValid(reg[ir.r1])) {
+                            pc = reg[ir.r1];
                             break;
                         }
                         else
