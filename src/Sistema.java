@@ -242,70 +242,102 @@ public class Sistema {
                             break;
 
                     case JMP: //  PC ← k
-                        pc = ir.p;
-                        break;
+                        if (isAddressValid(ir.p)) {
+                            pc = ir.p;
+                            break;
+                        }
+                        else
+                            break;
 
                     case JMPI: //  PC ← Rs
-                        pc = ir.r1;
-                        break;
+                        if (isAddressValid(ir.r1)) {
+                            pc = ir.r1;
+                            break;
+                        }
+                        else
+                            break;
+
 
                     case JMPIG: // If Rc > 0 Then PC ← Rs Else PC ← PC +1
-                        if (reg[ir.r2] > 0) {
-                            pc = reg[ir.r1];
-                        } else {
-                            pc++;
+                        if (isAddressValid(reg[ir.r1])) {
+                            if (reg[ir.r2] > 0) {
+                                pc = reg[ir.r1];
+                            } else {
+                                pc++;
+                            }
+                            break;
                         }
-                        break;
+                        else
+                            break;
 
                     case JMPIGM: // If Rc > 0 Then PC ← [A] Else PC ← PC +1
-                        //if (reg[ir.r1] > 0) {
-                        //    pc = ir.p;
-                        if (reg[ir.r2] > 0) {
-                            pc = m[ir.p].p;
-                        } else {
-                            pc++;
+                        if (isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
+                            if (reg[ir.r2] > 0) {
+                                pc = m[ir.p].p;
+                            } else {
+                                pc++;
+                            }
+                            break;
                         }
-                        break;
+                        else
+                            break;
 
                     case JMPILM: // If Rc < 0 Then PC ← [A] Else PC ← PC +1
-                        //if (reg[ir.r1] < 0) {
-                        //    pc = ir.p;
-                        if (reg[ir.r2] < 0) {
-                            pc = m[ir.p].p;
-                        } else {
-                            pc++;
+                        if (isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
+                            if (reg[ir.r2] < 0) {
+                                pc = m[ir.p].p;
+                            } else {
+                                pc++;
+                            }
+                            break;
                         }
-                        break;
+                        else
+                            break;
 
                     case JMPIEM: // If Rc = 0 Then PC ← [A] Else PC ← PC +1
-                        //if (reg[ir.r1] == 0) {
-                        //    pc = ir.p;
-                        if (reg[ir.r2] == 0) {
-                            pc = m[ir.p].p;
-                        } else {
-                            pc++;
+                        if (isAddressValid(ir.p) && isAddressValid(m[ir.p].p)) {
+                            if (reg[ir.r2] == 0) {
+                                pc = m[ir.p].p;
+                            } else {
+                                pc++;
+                            }
+                            break;
                         }
-                        break;
+                        else
+                            break;
+
 
                     case JMPIE: // If Rc = 0 Then PC ← Rs Else PC ← PC +1
-                        if (reg[ir.r2] == 0) {
-                            pc = reg[ir.r1];
-                        } else {
-                            pc++;
+                        if (isAddressValid(reg[ir.r1])) {
+                            if (reg[ir.r2] == 0) {
+                                pc = reg[ir.r1];
+                            } else {
+                                pc++;
+                            }
+                            break;
                         }
-                        break;
+                        else
+                            break;
 
                     case JMPIL: //  PC ← Rs
-                        if (reg[ir.r2] < 0) {
-                            pc = reg[ir.r1];
-                        } else {
-                            pc++;
+                        if (isAddressValid(reg[ir.r1])) {
+                            if (reg[ir.r2] < 0) {
+                                pc = reg[ir.r1];
+                            } else {
+                                pc++;
+                            }
+                            break;
                         }
-                        break;
+                        else
+                            break;
 
                     case JMPIM: //  PC ← [A]
-                        pc = m[ir.p].p;
-                        break;
+                        if (isAddressValid(m[ir.p].p) && isAddressValid(ir.p)) {
+                            pc = m[ir.p].p;
+                            break;
+                        }
+                        else
+                            break;
 
                     case SWAP: // t <- r1; r1 <- r2; r2 <- t
                         int temp;
@@ -489,7 +521,7 @@ public class Sistema {
         // Fase 1
         //s.roda(progs.fibonacci2);
         //s.roda(progs.fatorial2);
-        //s.roda(progs.bubbleSort);
+        s.roda(progs.bubbleSort);
 
         // Fase 2 - Testes de Interrupções
         //s.roda(progs.invalidAddressTest);
@@ -498,7 +530,7 @@ public class Sistema {
 
         // Fase 3 - Testes de Chamadas de Sistema
         //s.roda(progs.trapTestOutput);
-        s.roda(progs.trapTestInput);
+        //s.roda(progs.trapTestInput);
 
 
     }
