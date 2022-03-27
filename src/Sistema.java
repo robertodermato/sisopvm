@@ -409,13 +409,16 @@ public class Sistema {
 
                             if (reg[8]==1){
                                 int address_destiny = reg[9];
+                                System.out.println("Insira um número:");
                                 int value_to_be_written = in.nextInt();
                                 m[address_destiny].p = value_to_be_written;
+                                interrupts = Interrupts.INT_NONE; // sai da chamada de sistema
                             }
 
                             if (reg[8]==2){
                                 int source_adress = reg[9];
                                 System.out.println("Output: " + m[source_adress].p);
+                                interrupts = Interrupts.INT_NONE; // sai da chamada de sistema
                             }
 
                             break;
@@ -825,7 +828,7 @@ public class Sistema {
         };
 
         // Usuário faz input de um inteiro que é armazenado na posição 3 da memória,
-        // se for negativo armazena -1 na saída; se for positivo responde o fatorial do número na saída
+        // se for negativo armazena -1 na saída [17]; se for positivo responde o fatorial do número na saída[17]
         public Word[] fatorialComInput = new Word[] {
                 // input
                 new Word(Opcode.LDI, 8, -1, 1),    // 0- coloca 1 em reg 8 para criar um trap de input
@@ -850,9 +853,9 @@ public class Sistema {
                 new Word(Opcode.SUB, 0, 6, -1),      // 13   	decrementa r0 1
                 new Word(Opcode.JMP, -1, -1, 11),     // 14   	vai p posicao 11, que é o início do loop
 
-                new Word(Opcode.STD, 1, -1, 17),      // 15   	coloca valor de r1 na posição 14
+                new Word(Opcode.STD, 1, -1, 17),      // 15   	coloca valor de r1 na posição 17
                 new Word(Opcode.STOP, -1, -1, -1),    // 16  	stop
-                new Word(Opcode.DATA, -1, -1, -1) };  // 17   ao final o valor do fatorial estará na posição 10 da memória
+                new Word(Opcode.DATA, -1, -1, -1) };  // 17   ao final o valor do fatorial estará na posição 17 da memória
 
     }
 }
