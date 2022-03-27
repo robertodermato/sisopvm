@@ -80,7 +80,7 @@ public class Sistema {
         private void showState(){
             System.out.println("       "+ pc);
             System.out.print("           ");
-            for (int i=0; i<8; i++) { System.out.print("r"+i);   System.out.print(": "+reg[i]+"     "); };
+            for (int i=0; i<reg.length; i++) { System.out.print("r"+i);   System.out.print(": "+reg[i]+"     "); };
             System.out.println("");
             System.out.print("           ");  dump(ir);
         }
@@ -658,8 +658,8 @@ public class Sistema {
         // Dado um inteiro em na posição X da memória,
         // se for negativo armazena -1 na saída; se for positivo responde o fatorial do número na saída
         public Word[] fatorial2 = new Word[] { 	 // este fatorial so aceita valores positivos.   nao pode ser zero
-                new Word(Opcode.DATA, -1, -1, 5),   // 0- número a ser calculado o fatorial
-                new Word(Opcode.DATA, -1, -1, 15),  // 1- armazena o final do programa
+                new Word(Opcode.DATA, -1, -1, 1),   // 0- número a ser calculado o fatorial
+                new Word(Opcode.DATA, -1, -1, 12),  // 1- armazena o final do programa
                 new Word(Opcode.LDD, 0, -1, 0),     // 2- coloca em reg 0 o valor da memória na posição 0
                 new Word(Opcode.LDI, 1, -1, -1),    // 3- deixa reg 1 com -1 por padrão
 
@@ -824,40 +824,35 @@ public class Sistema {
                 new Word(Opcode.DATA, -1, -1, -1)
         };
 
-        // Dado um inteiro em na posição X da memória,
+        // Usuário faz input de um inteiro que é armazenado na posição 3 da memória,
         // se for negativo armazena -1 na saída; se for positivo responde o fatorial do número na saída
-        public Word[] fatorialComInput = new Word[] { 	 // este fatorial so aceita valores positivos.   nao pode ser zero
-                // Entrada (in) (reg[8]=1): o programa lê um inteiro do teclado.
-                // O parâmetro para IN, em reg[9], é o endereço de memória a armazenar a leitura
-                // Saída (out) (reg[8]=2): o programa escreve um inteiro na tela.
-                // O parâmetro para OUT, em reg[9], é o endereço de memória cujo valor deve-se escrever na tela
-
+        public Word[] fatorialComInput = new Word[] {
                 // input
                 new Word(Opcode.LDI, 8, -1, 1),    // 0- coloca 1 em reg 8 para criar um trap de input
-                new Word(Opcode.LDI, 9,-1,4),      // 1- coloca 4 no reg 9, ou seja a posição onde será feita a escrita do input
+                new Word(Opcode.LDI, 9,-1,3),      // 1- coloca 3 no reg 9, ou seja a posição onde será feita a escrita do input
                 new Word(Opcode.TRAP,-1,-1,-1),    // 2- faz o input
 
-                new Word(Opcode.DATA, -1, -1, -1),   // 0- número a ser calculado o fatorial
-                new Word(Opcode.DATA, -1, -1, 15),  // 1- armazena o final do programa
-                new Word(Opcode.LDD, 0, -1, 0),     // 2- coloca em reg 0 o valor da memória na posição 0
-                new Word(Opcode.LDI, 1, -1, -1),    // 3- deixa reg 1 com -1 por padrão
+                new Word(Opcode.DATA, -1, -1, -1),   // 3- número a ser calculado o fatorial
+                new Word(Opcode.DATA, -1, -1, 15),  // 4- armazena o final do programa
+                new Word(Opcode.LDD, 0, -1, 3),     // 5- coloca em reg 0 o valor da memória na posição 3, que é o número a ser calculado
+                new Word(Opcode.LDI, 1, -1, -1),    // 6- deixa reg 1 com -1 por padrão
 
                 // testa se número é menor que 0, e se for manda para final do programa
-                new Word(Opcode.JMPILM, -1, 0, 1),  // 4- pula para a linha amrazenada em [1], que é a linha de final do programa, se r0<0
+                new Word(Opcode.JMPILM, -1, 0, 1),  // 7- pula para a linha amrazenada em [1], que é a linha de final do programa, se r0<0
 
-                new Word(Opcode.LDI, 1, -1, 1),      // 5   	r1 é 1 para multiplicar (por r0)
-                new Word(Opcode.LDI, 6, -1, 1),      // 6   	r6 é 1 para ser o decremento
-                new Word(Opcode.LDI, 7, -1, 12),     // 7   	r7 tem posicao de stop do programa
+                new Word(Opcode.LDI, 1, -1, 1),      // 8   	r1 é 1 para multiplicar (por r0)
+                new Word(Opcode.LDI, 6, -1, 1),      // 9   	r6 é 1 para ser o decremento
+                new Word(Opcode.LDI, 7, -1, 15),     // 10   	r7 tem posicao de stop do programa
 
                 // início do loop
-                new Word(Opcode.JMPIE, 7, 0, 0),     // 8   	se r0=0 pula para r7(=12)
-                new Word(Opcode.MULT, 1, 0, -1),     // 9   	r1 = r1 * r0
-                new Word(Opcode.SUB, 0, 6, -1),      // 10   	decrementa r0 1
-                new Word(Opcode.JMP, -1, -1, 8),     // 11   	vai p posicao 8, que é o início do loop
+                new Word(Opcode.JMPIE, 7, 0, 0),     // 11   	se r0=0 pula para r7(=15)
+                new Word(Opcode.MULT, 1, 0, -1),     // 12   	r1 = r1 * r0
+                new Word(Opcode.SUB, 0, 6, -1),      // 13   	decrementa r0 1
+                new Word(Opcode.JMP, -1, -1, 11),     // 14   	vai p posicao 11, que é o início do loop
 
-                new Word(Opcode.STD, 1, -1, 14),      // 12   	coloca valor de r1 na posição 14
-                new Word(Opcode.STOP, -1, -1, -1),    // 13   	stop
-                new Word(Opcode.DATA, -1, -1, -1) };  // 14   ao final o valor do fatorial estará na posição 10 da memória
+                new Word(Opcode.STD, 1, -1, 17),      // 15   	coloca valor de r1 na posição 14
+                new Word(Opcode.STOP, -1, -1, -1),    // 16  	stop
+                new Word(Opcode.DATA, -1, -1, -1) };  // 17   ao final o valor do fatorial estará na posição 10 da memória
 
     }
 }
