@@ -702,51 +702,71 @@ public class Sistema {
         };
 
         public Word[] bubbleSort = new Word[]{
-                new Word(Opcode.DATA, -1, -1, 41),  // jump do primeiro loop gm ou em
-                new Word(Opcode.DATA, -1, -1, 9),   // jump do segundo loop gm ou em
-                new Word(Opcode.DATA, -1, -1, 34),  // jump do terceiro loop lm
+                // Posições dos loops
+                new Word(Opcode.DATA, -1, -1, 41),  // 0- jump do primeiro loop gm ou em
+                new Word(Opcode.DATA, -1, -1, 9),   // 1- jump do segundo loop gm ou em
+                new Word(Opcode.DATA, -1, -1, 34),  // 2- jump do terceiro loop lm
+
+                // não usadas, mas mantidas devido a dificuldade de refatorar esses códigos
                 new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1),
                 new Word(Opcode.DATA, -1, -1, -1),
-                new Word(Opcode.LDD, 1, -1, 43),
-                new Word(Opcode.LDI, 2, -1, 0),
-                new Word(Opcode.LDI, 3, -1, 0),
-                new Word(Opcode.LDI, 5, -1, 0),     // linha 9. Início loop 1
+
+                new Word(Opcode.LDD, 1, -1, 43), // 6- reg 1 vai guardar o tamanho do vetor para comparações
+                new Word(Opcode.LDI, 2, -1, 0),  // 7- apenas inicializa vetor 2 com 0
+                new Word(Opcode.LDI, 3, -1, 0),  // 8- apenas inicializa vetor 3 com 0
+
+                // início loop externo
+                new Word(Opcode.LDI, 5, -1, 0),     // linha 9
                 new Word(Opcode.ADD, 5, 2, -1),
                 new Word(Opcode.SUB, 5, 1, -1),
                 new Word(Opcode.JMPIGM, -1, 5, 0),  // linha 12 - pula pra linha 41 que é o fim (armazenado na memória [0])
                 new Word(Opcode.JMPIEM, -1, 5, 0),
                 new Word(Opcode.ADDI, 2, -1, 1),
-                new Word(Opcode.LDI, 3, -1, 0),     // linha 15
-                new Word(Opcode.LDI, 5, -1, 0),
+                new Word(Opcode.LDI, 3, -1, 0),     // 15-
+
+                // início loop interno
+                new Word(Opcode.LDI, 5, -1, 0),     // 16-
                 new Word(Opcode.ADD, 5, 3, -1),
                 new Word(Opcode.ADDI, 5, -1, 1),
-                new Word(Opcode.SUB, 5, 1, -1),
-                new Word(Opcode.JMPIEM, -1, 5, 1),  // linha 20. Pula pra linha 9 (armazenado na memória [1]). Loop 1
+
+                // Verifica se chegou ao final do vetor. Se sim,reinicia comparações.
+                new Word(Opcode.SUB, 5, 1, -1),     // 19-
+                new Word(Opcode.JMPIEM, -1, 5, 1),  // 20- Pula para linha 9 (armazenado na memória [1]). Loop externo
                 new Word(Opcode.JMPIGM, -1, 5, 1),
-                new Word(Opcode.LDI, 4, -1, 44),
-                new Word(Opcode.ADD, 4, 3, -1),
-                new Word(Opcode.LDI, 5, -1, 1),
-                new Word(Opcode.ADD, 5, 4, -1),
+                // fim loop externo
+
+                // Coloca nos registradores 4 e 5 dois números adjacentes do vetor
+                new Word(Opcode.LDI, 4, -1, 44),    // 21- coloca a posição da memória de início do vetor [44] no reg 4
+                new Word(Opcode.ADD, 4, 3, -1),     // 22-
+                new Word(Opcode.LDI, 5, -1, 1),     // 23-
+                new Word(Opcode.ADD, 5, 4, -1),     // 24-
                 new Word(Opcode.LDX, 4, 4, -1),
                 new Word(Opcode.LDX, 5, 5, -1),
-                new Word(Opcode.ADDI, 3, -1, 1),
+
+                new Word(Opcode.ADDI, 3, -1, 1),    // 27- é o incremento da posição do vetor
+
+                // Testa se o segundo número é menor que o primeiro
                 new Word(Opcode.LDI, 6, -1, 0),
                 new Word(Opcode.ADD, 6, 5, -1),
                 new Word(Opcode.SUB, 6, 4, -1),
-                new Word(Opcode.JMPILM, -1, 6, 2), // linha 32. pula pra linha 34 (amazenado na memória [2])
-                new Word(Opcode.JMP, -1, -1, 16),
-                new Word(Opcode.SWAP, 5, 4, -1),
-                new Word(Opcode.LDI, 6, -1, 43),
+                new Word(Opcode.JMPILM, -1, 6, 2),  // 32- pula pra linha 34 se o segundo número é menor que o primeiro (amazenado na memória [2])
+                new Word(Opcode.JMP, -1, -1, 16),   // 33- se não for volta pro início do loop interno
+                // fim loop interno
+
+                // Faz swap de dois números, se o segundo for menor que o primeiro
+                new Word(Opcode.SWAP, 5, 4, -1),    // 34-
+                new Word(Opcode.LDI, 6, -1, 43),    // 35-
                 new Word(Opcode.ADD, 6, 3, -1),
                 new Word(Opcode.STX, 6, 4, -1),
                 new Word(Opcode.ADDI, 6, -1, 1),
                 new Word(Opcode.STX, 6, 5, -1),
-                new Word(Opcode.JMP, -1, -1, 16),
+                new Word(Opcode.JMP, -1, -1, 16),   // 40-
+
                 new Word(Opcode.STOP, -1, -1, -1),
-                new Word(Opcode.DATA, -1, -1, -1), // linha 42. não usada
-                new Word(Opcode.DATA, -1, -1, 6), // tamanho do vetor
-                new Word(Opcode.DATA, -1, -1, 12), // dados do vetor a partir daqui até o final
+                new Word(Opcode.DATA, -1, -1, -1),  // 42- não usada
+                new Word(Opcode.DATA, -1, -1, 6),   // 43- tamanho do vetor
+                new Word(Opcode.DATA, -1, -1, 12),  // 44- dados do vetor a partir daqui até o final
                 new Word(Opcode.DATA, -1, -1, 7),
                 new Word(Opcode.DATA, -1, -1, 9),
                 new Word(Opcode.DATA, -1, -1, 1),
