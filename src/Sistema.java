@@ -61,12 +61,12 @@ public class Sistema {
         public CPU(Word[] _m) {     // ref a MEMORIA e interrupt handler passada na criacao da CPU
             m = _m; 				// usa o atributo 'm' para acessar a memoria.
             reg = new int[10]; 		// aloca o espaço dos registradores
-            maxInt = 1000;          // números aceitos -1000 até 1000
+            maxInt = 100_000;          // números aceitos -100_000 até 100_000
         }
 
         public void setContext(int _pc) {  // no futuro esta funcao vai ter que ser
             pc = _pc;                                   // limite e pc (deve ser zero nesta versão)
-            this.interrupts = Interrupts.INT_NONE;      // imnicializa interrupção com NONE
+            this.interrupts = Interrupts.INT_NONE;      // inicializa interrupção com NONE
         }
 
         private void dump(Word w) {
@@ -122,7 +122,7 @@ public class Sistema {
                 switch (ir.opc) { // para cada opcode, sua execução
 
                     case LDI: // Rd ← k
-                        if (isRegisterValid(ir.r1)) {
+                        if (isRegisterValid(ir.r1) && isNumberValid(ir.p)) {
                             reg[ir.r1] = ir.p;
                             pc++;
                             break;
@@ -131,7 +131,7 @@ public class Sistema {
                             break;
 
                     case LDD: // Rd ← [A]
-                        if (isRegisterValid(ir.r1) && isAddressValid(ir.p))
+                        if (isRegisterValid(ir.r1) && isAddressValid(ir.p) && isNumberValid(m[ir.p].p))
                             {
                                 reg[ir.r1] = m[ir.p].p;
                                 pc++;
@@ -141,7 +141,7 @@ public class Sistema {
                             break;
 
                     case STD: // [A] ← Rs
-                        if (isRegisterValid(ir.r1) && isAddressValid(ir.p)) {
+                        if (isRegisterValid(ir.r1) && isAddressValid(ir.p) && isNumberValid(reg[ir.r1])) {
                             m[ir.p].opc = Opcode.DATA;
                             m[ir.p].p = reg[ir.r1];
                             pc++;
@@ -151,21 +151,17 @@ public class Sistema {
                             break;
 
                     case ADD: // Rd ← Rd + Rs
-                        if (isRegisterValid(ir.r2) && isRegisterValid(ir.r1)) {
-                            if (reg[ir.r1] + reg[ir.r2] > maxInt || reg[ir.r1] > maxInt || reg[ir.r2] > maxInt) {
-                                interrupts = Interrupts.INT_OVERFLOW;
-                                pc++;
-                                break;
-                            }
-                            else
-                            {
-                                reg[ir.r1] = reg[ir.r1] + reg[ir.r2];
-                                pc++;
-                                break;
-                            }
+                        if (isRegisterValid(ir.r2) && isRegisterValid(ir.r1) && isNumberValid(reg[ir.r1]) && isNumberValid(reg[ir.r2]) && isNumberValid(reg[ir.r1] + reg[ir.r2])) {
+                            reg[ir.r1] = reg[ir.r1] + reg[ir.r2];
+                            pc++;
+                            break;
                         }
                         else
+                        {
+                            interrupts = Interrupts.INT_OVERFLOW;
+                            pc++;
                             break;
+                        }
 
                     case MULT: // Rd ← Rd * Rs
                         if (isRegisterValid(ir.r2) && isRegisterValid(ir.r1)) {
@@ -182,20 +178,19 @@ public class Sistema {
                             break;
 
                     case ADDI: // Rd ← Rd + k
-                        if (isRegisterValid(ir.r1)) {
-                            if (reg[ir.r1] + ir.p > maxInt || reg[ir.r1] > maxInt || ir.p > maxInt) {
-                                interrupts = Interrupts.INT_OVERFLOW;
-                                pc++;
-                                break;
-                            }
-                            else {
+                        if (isRegisterValid(ir.r1) && isNumberValid(reg[ir.r1]) && isNumberValid(ir.p) && isNumberValid(reg[ir.r1] + ir.p))
+                            {
                                 reg[ir.r1] = reg[ir.r1] + ir.p;
                                 pc++;
                                 break;
                             }
-                        }
                         else
-                            break;
+                            {
+                                interrupts = Interrupts.INT_OVERFLOW;
+                                pc++;
+                                break;
+                            }
+
 
                     case STX: // [Rd] ←Rs
                         if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isAddressValid(reg[ir.r1])) {
@@ -208,7 +203,7 @@ public class Sistema {
                             break;
 
                     case LDX: // Rd ← [Rs]
-                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isAddressValid(reg[ir.r2])) {
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isAddressValid(reg[ir.r2]) && isNumberValid(m[reg[ir.r2]].p)) {
                             reg[ir.r1] = m[reg[ir.r2]].p;
                             pc++;
                             break;
@@ -217,36 +212,28 @@ public class Sistema {
                             break;
 
                     case SUB: // Rd ← Rd - Rs
-                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2)) {
-                            if (reg[ir.r1] > maxInt || reg[ir.r2] > maxInt) {
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isNumberValid(reg[ir.r2]) && isNumberValid(reg[ir.r1])&& isNumberValid(reg[ir.r1] - reg[ir.r2])) {
+                            reg[ir.r1] = reg[ir.r1] - reg[ir.r2];
+                            pc++;
+                            break;
+                        }
+                            else {
                                 interrupts = Interrupts.INT_OVERFLOW;
                                 pc++;
                                 break;
                             }
-                            else {
-                                reg[ir.r1] = reg[ir.r1] - reg[ir.r2];
-                                pc++;
-                                break;
-                            }
-                        }
-                        else
-                            break;
 
                     case SUBI: // Rd ← Rd - k
-                        if (isRegisterValid(ir.r1)) {
-                            if (reg[ir.r1] > maxInt || ir.p > maxInt) {
-                                interrupts = Interrupts.INT_OVERFLOW;
-                                pc++;
-                                break;
-                            }
-                            else {
+                        if (isRegisterValid(ir.r1) && isNumberValid(reg[ir.r1]) && isNumberValid(ir.p) && isNumberValid(reg[ir.r1] - ir.p)) {
                                 reg[ir.r1] = reg[ir.r1] - ir.p;
                                 pc++;
                                 break;
                             }
-                        }
-                        else
-                            break;
+                            else {
+                                interrupts = Interrupts.INT_OVERFLOW;
+                                pc++;
+                                break;
+                            }
 
                     case JMP: //  PC ← k
                         if (isAddressValid(ir.p)) {
@@ -347,7 +334,7 @@ public class Sistema {
                             break;
 
                     case SWAP: // t <- r1; r1 <- r2; r2 <- t
-                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2)) {
+                        if (isRegisterValid(ir.r1) && isRegisterValid(ir.r2) && isNumberValid(reg[ir.r1]) && isNumberValid(reg[ir.r2])) {
                             int temp;
                             temp = reg[ir.r1];
                             reg[ir.r1] = reg[ir.r2];
@@ -447,6 +434,10 @@ public class Sistema {
             // cpu
             cpu = new CPU(m);   // cpu acessa memória
         }
+
+        public int getTamMem(){
+            return tamMem;
+        }
     }
     // ------------------- V M  - fim ------------------------------------------------------------------------
     // -------------------------------------------------------------------------------------------------------
@@ -534,7 +525,7 @@ public class Sistema {
 
         // Fase 1
         //s.roda(progs.fibonacci2);
-        //s.roda(progs.fatorial2);
+        s.roda(progs.fatorial2);
         //s.roda(progs.bubbleSort);
 
         // Fase 2 - Testes de Interrupções
@@ -546,7 +537,7 @@ public class Sistema {
         //s.roda(progs.trapTestOutput);
         //s.roda(progs.trapTestInput);
         //s.roda(progs.fibonacciComOutput);
-        s.roda(progs.fatorialComInput);
+        //s.roda(progs.fatorialComInput);
     }
 
     // -------------------------------------------------------------------------------------------------------
