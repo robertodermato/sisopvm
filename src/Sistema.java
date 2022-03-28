@@ -525,12 +525,12 @@ public class Sistema {
 
         // Fase 1
         //s.roda(progs.fibonacci2);
-        s.roda(progs.fatorial2);
+        //s.roda(progs.fatorial2);
         //s.roda(progs.bubbleSort);
 
         // Fase 2 - Testes de Interrupções
         //s.roda(progs.invalidAddressTest);
-        //s.roda(progs.overflowTest);
+        s.roda(progs.overflowTest);
         //s.roda(progs.invalidRegisterTest);
 
         // Fase 3 - Testes de Chamadas de Sistema
@@ -695,8 +695,8 @@ public class Sistema {
         };
 
         public Word[] overflowTest = new Word []{
-                new Word(Opcode.LDI, 0, -1, 800),
-                new Word(Opcode.LDI, 1, -1, 800),
+                new Word(Opcode.LDI, 0, -1, 80800),
+                new Word(Opcode.LDI, 1, -1, 80800),
                 new Word(Opcode.MULT, 0, 1, -1),
                 new Word(Opcode.STOP, -1, -1, -1)
         };
